@@ -1,0 +1,390 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{xcolor}
+\usepackage{amsmath}
+%\usepackage{fancyhdr}
+%\usepackage{times,graphicx,epstopdf,,amsfonts,amsthm,amsmath,xspace}
+%\usepackage[left=.75in,top=.75in,right=.75in,bottom=.75in]{geometry}
+\usepackage{hyperref}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+
+\pdfpagewidth 8.5in
+\pdfpageheight 11in 
+
+
+
+\oddsidemargin 0in
+\evensidemargin 0in
+
+
+\newtheorem{claim}{Claim}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{observation}{Observation}
+\newtheorem{question}{Question}
+\newtheorem{problem}{Problem}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+
+
+\begin{document}
+	
+\begin{center}
+\Large{\textbf{CS 330, Fall 2020, Homework 1 \\
+Due Wednesday, September
+  9, 2020, 11:59 pm EST, via Gradescope}}
+\end{center}
+
+\begin{center}
+
+   Student: Justin DiEmmanuele
+   \color{red} Add Collaborators
+    
+\end{center}
+
+
+\section*{Homework Guidelines}
+%Please make sure you read  the collaboration policy before you start working on your homework. (We will grade your homework only if we have a signed copy on file.) Refer to the general information handout for the homework policy and additional options.
+
+
+\paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
+programming assignments and reading quizzes, is permitted, but not encouraged.
+If you
+choose to collaborate on some problems, you are allowed to discuss
+each problem with at most 5 other students currently enrolled in the
+class.
+Before working with others on a problem, you should think about it
+yourself for at least 45 minutes. Finding answers to problems on the
+Web or from other outside sources (these include anyone not enrolled
+in the class) is strictly forbidden.
+
+{\em You must write up each problem solution by yourself without
+assistance, even if you collaborate with others to solve the
+problem.} You must also identify your collaborators. If you did not
+work with anyone, you should write "Collaborators: none." It is a
+violation of this policy to submit a problem solution that you
+cannot orally explain to an instructor or TA.
+
+\paragraph{Solution guidelines} For problems that require you to provide an algorithm, you must give the following:
+    \begin{enumerate}
+\item  a precise description of the algorithm in English and, if helpful, pseudocode,
+\item a proof of correctness,
+\item an analysis of running time and space.
+\end{enumerate}
+You may use algorithms from class as subroutines. You may also use any facts that we proved in class.
+
+
+You should be as clear and concise as possible in your write-up of
+solutions. 
+%Understandability of your answer is as desirable as correctness, because communication of technical material is an important skill. 
+A simple, direct analysis is worth more points than a
+convoluted one, both because it is simpler and less prone to error and
+because it is easier to read and understand. Points might be
+subtracted for illegible handwriting and for solutions that are too
+long. Incorrect solutions will get from 0 to 30\% of the grade,
+depending on how far they are from a working solution. Correct
+solutions with possibly minor flaws will get 70 to 100\%, depending on
+the flaws and clarity of the write up.
+
+
+\newpage
+\begin{enumerate}
+
+  
+
+\item \textbf{Array operations and asymptotic running times} ( 10 points) 
+      \begin{enumerate}
+      \item 
+   Consider the following pseudocode:
+
+    \begin{algorithm}[H]
+      \caption{TestAlg($A$)} 
+      \KwIn{$ A$ is an array of real numbers, indexed from 1 to $n$}
+      $n \gets length(A)$ \;
+      \For{$j\gets 1$ to $\floor{\frac n 2}$} 
+      {
+        $k= n+1-j$\;
+        $ A[j] \gets A[j]+A[k]$     \;
+        $ A[k] \gets A[j]-A[k] $ \;
+        $A[j] \gets A[j]-A[k]$ \;
+      }
+    \end{algorithm}
+
+
+Which of the following statements are true at the end of every iteration of the \textbf{for} loop?
+\begin{enumerate}
+\item The sub-array $A[1\ldots j]$ contains its original contents in
+  their original
+  order 
+
+  \begin{itemize}
+      \color{teal}
+      \item FALSE 
+  \end{itemize}
+
+\item The sub-array $A[1\ldots j]$ contains the original contents of
+  sub-array \\
+  $A[(n+1-j)\ldots n]$ in reverse order.
+
+  \begin{itemize}
+      \color{teal}
+      \item TRUE
+      \item The algorithm swaps the contents of the first and last index, second and second to last index etc. This results in a mirrored array which would have the property described above.
+  \end{itemize}
+
+\item The sub-array $A[1\ldots j]$
+  contains its original contents in reverse order.
+
+  \begin{itemize}
+      \color{teal}
+      \item FALSE 
+  \end{itemize}
+
+\item The sub-array
+  $A[(n+1-j)\ldots n]$ contains its original contents in their original order.
+  
+  \begin{itemize}
+      \color{teal}
+      \item FALSE 
+  \end{itemize}
+
+  \item The sub-array $A[(n+1-j)\ldots n]$ contains the original contents of
+  sub-array $A[1\ldots j]$ in reverse order.
+
+  \begin{itemize}
+      \color{teal}
+      \item True 
+      \item This is true for the same reasons part ii is true - the algorithm is mirroring $A[1\ldots j]$ and putting it in the position of $A[(n+1-j)\ldots n]$ and vice versa
+  \end{itemize}
+
+\item  The sub-array $A[(n+1-j)\ldots n]$
+  contains its original contents in reverse order.
+  
+  \begin{itemize}
+      \color{teal}
+      \item FALSE 
+  \end{itemize}
+
+\end{enumerate}
+
+For the ones that you select as always true, write a one sentence justification.\\
+
+\textit{Aside:} Statements that hold on every iteration of a loop, like the correct options above, are called \textit{loop invariants}. We will use them a lot when we analyze  algorithms. 
+
+\item Consider the following $SwapAlg(\ )$ algorithm. 
+
+
+\begin{algorithm}[H]
+      \caption{SwapAlg($A$)} 
+      \KwIn{$ A$ is an array containing the first $n$ positive integers. It is indexed $1$ to $n$. }
+      $n \gets length(A)$ \;
+      $swaps \gets 0$\;
+      \For{$i=1$ to $n$} 
+      {
+       \For{$j=1$ to $n-i$}
+       {
+       \If{$A[j] > A[j+1]$}
+       {
+       $A[j] = A[j] + A[j+1]$\;
+       $A[j+1] = A[j]-A[j+1]$\;
+       $A[j] = A[j] - A[j+1]$\;
+       $swaps ++$\;
+       }
+       }
+      }
+      \KwOut{$swaps$}
+    \end{algorithm}
+    
+    \begin{enumerate}
+    \item Give the best asymptotic upper bound you can on the running time of $SwapAlg(\ )$ as a function of $n$ using big-Oh notation. Explain your computation.
+
+            \begin{itemize}
+                \color{teal}
+                \item $O(n^2)$
+                \item The program will run the outer loop n times and the inner loop $n - i$ times. The inner loop therefore runs 1 less time for each iteration of the outer loop. The run time will be something like: $ (n-1) + (n-2) \ldots (n-n)$ having n terms. $n$ terms with a function of $n$ runs per term results in an $n^2$ run time. The run time will be lower than $n^2$ but still falls under the category of $O(n^2)$
+            \end{itemize}
+
+        \item Explain in one or two sentences what value the variable $swaps$ is tracking. What is the number  that this algorithm returns?
+
+            \begin{itemize}
+                \color{teal}
+                \item $swaps$ is tracking the number of times two adjacent array values swap indexes. This algorithm returns this number - how many times two array values had their indexes swapped.
+            \end{itemize}
+        
+    \end{enumerate}
+    
+  \item Consider the $decAlg(\ )$ algorithm.
+ 
+ 
+ 
+ \begin{algorithm}[H]
+      \caption{decAlg($A$)} 
+      \KwIn{$ A$ is an array of integers. It is indexed $1$ to $n$.}
+      $n \gets length(A)$ \;
+      $dec \gets 0$\;
+      \For{$i=2$ to $n + 1$}
+      {
+      $j \gets i-1$\;
+      \While{$j>1$ AND $A[j-1] > A[j]$}{
+      $temp \gets A[j-1]$\;
+      $A[j-1] \gets A[j]$\;
+      $A[j] \gets temp$\;
+      $j--$\;
+      $dec++$\;
+      }
+      }
+     \KwOut{dec}
+    \end{algorithm}
+    
+      \begin{enumerate}
+       
+        \item Give the best asymptotic upper bound you can on the running time of $decAlg(\ )$ as a function of $n$ using big-Oh notation. Explain your computation.
+            \begin{itemize}
+                \color{teal}
+                \item $O\left(n^2\right) $
+                \item This has the same time complexity as algorithm 2. It would have the same representation of the number of executions but in reverse order $ (n-1) + (n-2) \ldots (n-n)$. Since there are n terms of functions of n iterations - the complexity is also $O(n^2)$
+            \end{itemize}
+
+        \item Observe, that both in $SwapAlg(\ )$ and  in $decAlg(\ )$ pairs of values in $A$ are swapped. Both variables $swap$ and $dec$ keep track of the number of swaps performed in their respective algorithms. State and give an exact proof of what the relationship between the two variables are when the algorithms are run on the same input $A$. (The answer we are looking for is that $swap$ is always smaller/equal/larger than $dec$ or that it varies depending on the input array.)(\emph{Hint: One way of proving it is to show that for any two values -- initially at index $A[x]$ and $A[y]$ --  if they are swapped at any given time in $swapAlg(\ )$ then they eventually will be swapped in $decAlg(\ )$ and vice verse. })
+            
+            \begin{itemize}
+                \color {teal}
+                \item $swaps$ and $dec$ in $SwapAlg\left(\  \right)$ and $decAlg\left( \  \right)$ will be equal for any array passed to the algorithms. 
+                \item Both algorithms are iteratively comparing adjacent values and swapping them if they are not in increasing order. Both algorithms will compare every adjacent pair of index values. 
+                \item \color{red} need to finish this
+            \end{itemize}
+
+    \end{enumerate}
+ 
+ \item Consider the $CountAlg(\ )$ algorithm.
+ 
+ \begin{algorithm}[H]
+      \caption{CountAlg($A$)} 
+      \KwIn{$ A$ is an array containing the first $n$ positive integers. It is indexed $1$ to $n$. }
+      $n \gets length(A)$ \;
+      $count \gets 0$\;
+      \For{$i=1$ to $n$} 
+      {
+      \For {$j=i+1$ to $n$}
+      {
+      \If{$i<j$ AND $A[i]>A[j]$ }
+      {
+    $count ++$
+    }
+      }
+      }
+      \KwOut{$count$}
+    \end{algorithm}
+    
+   
+ 
+    
+     \begin{enumerate}
+       
+        \item Give the best asymptotic upper bound you can on the running time of $countAlg(\ )$ as a function of $n$ using big-Oh notation. Explain your computation.
+
+            \begin{itemize}
+                \color{teal} 
+                \item $O\left( n^2 \right)$
+                \item This algorithm has the same run time as algorithms c and d. The outer loop runs n times and the inner loop runs $n-i$ times where $i$ is whichever number iteration the outer loop is on. This results in a number of executions like: $ (n-1) + (n-2) \ldots (n-n)$. This is n terms that have n run time giving an upper bound of $O(n^2)$.
+                \item \color{red} Go through this on paper - give a guess for relationship in part ii
+            \end{itemize}
+
+
+        \item In fact,  $count$ in $countAlg(\ )$ and $swap$ in $SwapAlg(\ )$ are closely related to each other. This is a non-trivial relationship  that we're going to cover in detail later this semester. For now, give your best guess based on your intuition of what this relationship might be. Make sure you clearly state what your observation is  and provide some justification. For the latter, show us how you came up with the observation. (e.g. by showing your computation for  the two values on some specific examples) (\emph{Note: tracing algorithms on specific examples is very helpful in understanding the algorithm. But you need to do it by yourself to truly benefit from this. })\\
+        
+    \end{enumerate}
+    
+ 
+
+ 
+    \end{enumerate}
+
+
+\item \textbf{Group assignments} (10 points)
+
+
+
+In CS330, the instructors decide to divide the students in to small groups that will be assigned projects. In order to encourage students to get to know their classmates,  no two students living on the same floor in the dorms can be assigned to the same group. (For simplicity assume that every student resides on campus.)  The size of the individual groups doesn't matter, however the instructors want to create as few groups as possible. 
+
+Denote the total number of students by $n$ and the number of floors by $k$.
+
+
+\begin{enumerate}
+\item 
+ True or False? the number of groups one needs is
+always at least the maximum number of  students living on any given
+floor. Justify your answer by giving a one-line proof (if it's true) or
+a counterexample (if it's false).
+    \begin{itemize}
+        \color{teal}
+        \item TRUE
+        \item If there are less groups than numbers of students on any given floor it would be impossible to separate the kids on that floor into distinct groups. Lets say n kids one one floor were to be split into m groups. We would iterate through the kids assigning each to empty groups. If m $<$ n, we would come to the realization that there are no empty groups to assign the kid after m iterations.
+    \end{itemize}
+
+\item Describe a simple algorithm, $Floors(A)$,
+that takes an array $A$ as its input, such that $A[i]$ contains  the floor ID for  student $i$. The output is an array or hash table (dictionary in Python)  $floor$, such that $floor[j]$ consists of the list of students living on floor $j$.  Write concise and clear \emph{pseudocode} for your algorithm. (\emph{Note: make sure you clearly indicate in your code what data structure(s) you are using}) Give a one sentence explanation on how your algorithm works.
+
+\begin{algorithm}[H]
+    \color{teal}
+    \color{red}
+      \caption{Floors($A$)} 
+      \KwIn{$ A$ is an array containing the floor ID $A[i]$ for student $i$}
+      $n \gets length(A)$ \;
+      $f \gets empty\_hash\_table$ \;
+      \For{$i=1$ to $n$} 
+      {
+        $f[A[i]] \gets i$
+      }
+      \KwOut{$count$}
+    \end{algorithm}
+  
+\item Find a \emph{simple} algorithm, $AssignStudents(A )$, that takes an array $A$ as its input, such that $A[i]$ contains  the floor ID for  student $i$. The output is data structure (e.g. array, hash table)  $B$, where $B[j]$ contains a \emph{list} of students assigned to group $j$.  Write concise and clear \emph{pseudocode} for your algorithm. (You may want to call the $Floors(A)$ function as a subroutine in your algorithm -- it's of course not required.) Give a short explanation in English on how your algorithm works.\\
+ 
+\begin{algorithm}[H]
+    \color{teal}
+    \color{red}
+      \caption{AssignStudents($A$)} 
+      \KwIn{$ A$ is an array containing the floor ID $A[i]$ for student $i$}
+      $n \gets length(A)$ \;
+      \For{$i=1$ to $n$} 
+      {
+        \For {$j=i+1$ to $n$}
+        {
+            \If{$i<j$ AND $A[i]>A[j]$ }
+            {
+                $count ++$
+            }
+        }
+      }
+      \KwOut{$count$}
+    \end{algorithm}
+  
+  
+
+
+    \item Give the best asymptotic upper bound you can on the running time of $AssignStudents(\ )$ as a function of the number of students, $n$, using big-Oh notation. Explain your computation. \\
+    
+    Note: Your running time analysis will always be graded based on your ability to analyze \emph{your} algorithm. That is, you have to give an analysis of the exact algorithm that you have written. That requires that you be specific about the data structure you use and what the running time of certain operations are on that structure. You may simply state your assumptions, as long as they are reasonable (e.g. you may reference what you know from CS112 about each structure.)
+    Do not forget to include the running time of the $Floors(A)$ subroutine if you're using it! 
+    
+    
+   
+    
+    
+    
+\end{enumerate}
+\end{enumerate}
+
+
+
+
+
+\end{document}

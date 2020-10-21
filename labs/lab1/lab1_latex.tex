@@ -1,0 +1,159 @@
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+
+\pdfpagewidth 8.5in
+\pdfpageheight 11in 
+
+
+
+\oddsidemargin 0in
+
+\newtheorem{claim}{Claim}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{observation}{Observation}
+\newtheorem{question}{Question}
+\newtheorem{problem}{Problem}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+
+
+\begin{document}
+	
+\begin{center}
+\Large{\textbf{Lab 1}}
+\end{center}
+
+
+\section{Hash Tables}
+
+    %\begin{algorithm}[H]
+      %\caption{TestAlg($A$)} 
+      %\KwIn{$ A$ is an array of real numbers, indexed from 1 to $n$}
+      %$n \gets length(A)$ \;
+      %\For{$j\gets 1$ to $\floor{\frac n 2}$} 
+      %{
+        %$k= n+1-j$\;
+        %$ A[j] \gets A[j]+A[k]$     \;
+        %$ A[k] \gets A[j]-A[k] $ \;
+        %$A[j] \gets A[j]-A[k]$ \;
+      %}
+    %\end{algorithm}
+
+\section{Dictionary Data Structures}
+
+    \begin{itemize}
+        
+        \item Unsorted Array
+            \begin{itemize}
+                \item Find $O\left( n \right) $ 
+                \item Insert $O\left( 1 \right) $ 
+                \item Delete (After Find) $O\left( 1 \right) $
+            \end{itemize}
+
+        \item Linked List
+            \begin{itemize}
+                \item Find $O\left( n \right) $ 
+                \item Insert $O\left( 1 \right) $ 
+                \item Delete (After Find) $O\left( 1 \right) $
+            \end{itemize}
+
+        \item Sorted Array
+            \begin{itemize}
+                \item Find $O\left( \log(n) \right) $ 
+                \item Insert $O\left( n \right) $ 
+                    \begin{itemize}
+                        \item Have to move all the elements down the array
+                    \end{itemize}
+                \item Delete (After Find) $O\left( n \right) $
+            \end{itemize}
+
+        \item Balanced Binary Search Tree
+            \begin{itemize}
+                \color{red}
+                \item Look this up
+                \color{black}
+                \item Find $O\left( n \right) $ 
+                    \begin{itemize}
+                        \item Throwing out half at each step
+                        \item can assume base 2 for log in this class
+                    \end{itemize}
+                \item Insert $O\left( 1 \right) $ 
+                \item Delete (After Find) $O\left( 1 \right) $
+            \end{itemize}
+
+        \item Hash Tables
+            \begin{itemize}
+                \item Expected
+                    \begin{itemize}
+                        \item Find $O\left( 1 \right) $ 
+                        \item Insert $O\left( 1 \right) $ 
+                        \item Delete (After Find) $O\left( 1 \right) $
+                    \end{itemize}
+                \item Worst Case
+                    \begin{itemize}
+                        \item Find $O\left( n \right) $ 
+                        \item Insert $O\left( n \right) $ 
+                    \end{itemize}
+            \end{itemize}
+
+
+    \end{itemize}
+
+    \newpage
+    \section{Asymptotics}
+
+        \begin{itemize}
+            \item $f\left( n \right) =  5n^2 - 1000, g\left( n \right) = 10n^2$
+                \begin{itemize}
+                    \item $o\left( g \right) $: false
+                    \item $O\left( g \right) $: true
+                    \item $\Theta \left( g \right) $: true
+                    \item $\Omega\left( g \right) $: true
+                    \item $\omega\left( g \right) $: false 
+                \end{itemize}
+        \end{itemize}
+        
+        \begin{itemize}
+            \item $f\left( n \right) =  n^3, g\left( n \right) = 3n^7 - 2n$
+                \begin{itemize}
+                    \item $o\left( g \right) $: true
+                    \item $O\left( g \right) $: true
+                    \item $\Theta \left( g \right) $: false
+                    \item $\Omega\left( g \right) $: false
+                    \item $\omega\left( g \right) $: false 
+                \end{itemize}
+        \end{itemize}
+
+        \begin{itemize}
+            \item $f\left( n \right) = \sqrt{n}, g\left( n \right) = \ln(n)$
+                \begin{itemize}
+                    \item $o\left( g \right) $: 
+                    \item $O\left( g \right) $:
+                    \item $\Theta \left( g \right) $:
+                    \item $\Omega\left( g \right) $:
+                    \item $\omega\left( g \right) $: 
+                \end{itemize}
+        \end{itemize}
+        
+
+
+
+
+        
+
+
+
+
+\end{document}
+

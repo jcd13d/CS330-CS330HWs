@@ -1,0 +1,395 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{fullpage,amsmath,amsfonts,latexsym,xcolor,clrscode3e}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+\newenvironment{solution}{\color{black} }{}
+
+\newcommand{\nats}{\mathbb{N}}
+
+\newcommand{\comment}[1]{$\rhd$\ {\small\sf #1}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{problem}{Problem}
+
+
+\begin{document}
+{\noindent\large
+{\em Introduction to Analysis of Algorithms} \hfill \today\\
+Boston University \hfill CS 330\\
+Professor  Adam Smith, Dora Erdos \hfill Fall 2020\\}
+\vspace{1pt}
+\hrulefill\vspace{3mm}
+\begin{center}
+{\LARGE\bf Homework 6}\\
+{\bf Due Wednesday, October 14 at 11:59 PM}
+\end{center}
+\begin{center}
+    \color{teal}
+   Student: Justin DiEmmanuele \\
+    Collaborators: Shilpen Patel, George Padavick, Matthew Gilgo
+\end{center}
+
+
+\section*{Homework Guidelines}
+
+\paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
+programming assignments and reading quizzes, is permitted, but not encouraged.
+If you
+choose to collaborate on some problems, you are allowed to discuss
+each problem with at most 5 other students currently enrolled in the
+class.
+Before working with others on a problem, you should think about it
+yourself for at least 45 minutes. Finding answers to problems on the
+Web or from other outside sources (these include anyone not enrolled
+in the class) is strictly forbidden.
+
+{\em You must write up each problem solution by yourself without
+assistance, even if you collaborate with others to solve the
+problem.} You must also identify your collaborators. If you did not
+work with anyone, you should write "Collaborators: none." It is a
+violation of this policy to submit a problem solution that you
+cannot orally explain to an instructor or TA.
+
+\paragraph{Solution guidelines} For problems that require you to provide an algorithm, you must give the following:
+    \begin{enumerate}
+\item  a precise description of the algorithm in English and, if helpful, pseudocode,
+\item a proof of correctness,
+\item an analysis of running time and space.
+\end{enumerate}
+You may use algorithms from class as subroutines. You may also use any facts that we proved in class.
+
+
+You should be as clear and concise as possible in your write-up of
+solutions. 
+
+A simple, direct analysis is worth more points than a
+convoluted one, both because it is simpler and less prone to error and
+because it is easier to read and understand. Points might be
+subtracted for illegible handwriting and for solutions that are too
+long. Incorrect solutions will get from 0 to 30\% of the grade,
+depending on how far they are from a working solution. Correct
+solutions with possibly minor flaws will get 70 to 100\%, depending on
+the flaws and clarity of the write up.
+
+\newpage 
+\section{Djikstra and negative edges}
+
+Usually, Djikstra's shortest-path algorithm is not used on graphs with negative-weight edges because it may fail and give us an incorrect answer.  However, sometimes Djikstra's will give us the correct answer even if the graph has negative edges.  (See Lab 4, question 1.2 for examples.)
+
+You are given graph $G$ with at least one negative edge, and a source $s$.  Write an algorithm that tests whether Djikstra's algorithm will give the correct shortest paths from $s$.  If it does, return the shortest paths.  If not, return `no.'  The time complexity should not be longer than that of Djiksta's algorithm itself, which is $\Theta(|E| + |V|\log|V|)$.
+
+\emph{(Hint: First, use Djikstra's algorithm to come up with candidate paths.  Then, write an algorithm to verify whether they are in fact the shortest paths from $s$.)}
+
+\begin{itemize}
+    \color{teal}
+    \item \textbf{A precise description of the algorithm in English and, if helpful, 
+        pseudocode.}
+
+        The main idea of the algorithm is to run Dijkstra's algorithm to 
+        get the claimed cheapest path and then for each edge "check" that 
+        the distance of the child node is greater than or equal to the weight
+        of the edge added to the distance of the root node as calculated by 
+        Dijkstra's.
+
+        For a graph $G$ represented by an adjacency list where each value is a 
+        tuple with both the adjacent node and the weight $(v, w)$ and source 
+        node $s$ the algorithm is defined as follows. 
+
+        \begin{algorithm}[H]
+            \color{teal}
+            \caption{DjikstraTest(G, s)} 
+            \KwIn{$G$ A graph in adjacency list form, with weights included}
+            \KwIn{$s$ source node}
+            $d = Dijkstras(G, s)$ \;
+            \For{$i = 0$ to $len(G)$}{
+                \For{ $j=0$ to $len(G[i])$ }{
+                    $parent = i$ \;
+                    $child = G[i][j][0]$ \;
+                    $weight = G[i][j][1]$ \;
+                }
+                \If {$d[parent] + weight < d[child]$ }{
+                    \KwOut{"no"}
+                }
+            }
+            \KwOut{$d$}
+        \end{algorithm}
+
+    \item \textbf{Proof of correctness}
+        
+        If we assume that Dijkstra's algorithm returns the shortest distance 
+        to each node, then for each edge $(u_i, v_i)$ with weight $w_i$, 
+        \[
+            d[u_i] + w_i \ge d[v_i]
+        .\] 
+        Where $d[]$ is the distance returned for that node by Dijkstra's. This 
+        must be true because $d[u_i] + w_i = d[v_i]$ is the equation that finds
+        the length of the path to $v_i$ that passes through the shortest path
+        to $u_i$. If the distance to $v_i$ through $u_i$ is smaller than the 
+        returned path length $d[v_i]$ there is clear inconsistency in Dijkstra's 
+        result as Dijkstra's should have returned this path. 
+        
+        Our claim is that the returned Dijkstra's distances $d$ are equivalent 
+        to the true shortest distances to each node from the source $d'$ if we 
+        check each node in the graph using the algorithm above and the 
+        condition is satisfied.
+
+        For our base case, level zero of the Dijkstra's tree, we check that the 
+        distance from the source (zero) plus the edge weight to each adjacent node 
+        is greater than or equal to the claimed shortest path. If this is satisfied
+        we know that there is no inconsistency in level zero.
+
+        We assume this holds up to level $N$. For level $N + 1$ we run the same
+        test. If the test is satisfied for each node in level $N + 1 $ we know 
+        Dijkstra's paths are correct. 
+
+    \item \textbf{Time Complexity}
+        
+        The time complexity of the algorithm is $O\left( n + m\log{n} \right) $
+        where $n$ is the number of nodes and m is the number of edges. 
+        This is the run time for Dijkstra's which the algorithm utilizes. The 
+        next significant portion is iterating through each edge to check 
+        the path lengths but this operation is only $O\left( n + m \right) $ 
+        since it can only iterate through all the nodes and edges. All other 
+        steps in the algorithm are $O\left( 1 \right) $ time.
+
+    \item \textbf{Space Complexity}
+
+        The space complexity is that of the space required to maintain the adjacency
+        list representation of the graph - $O\left( m + n \right) $.
+
+
+\end{itemize}
+
+
+
+
+
+\newpage
+\section{Scheduling a software project}
+You are in charge of a software project that has $n$ subprojects.  Each subproject $s_i$ takes $t_i$ time to complete.  Some subprojects have dependencies, meaning that some subprojects cannot be started until certain other subprojects have been completed.  Otherwise, any number of subprojects can be performed simultaneously.
+
+Write an algorithm that finds the shortest possible completion time for the project, as well as a schedule with start and finish times for each $s_i$ that achieves the shortest total time.
+
+Here is an example:
+
+\begin{center}
+\begin{tabular}{ |c |c |c |}
+\hline
+{\bf Subproject} & {\bf $t_i$} & {\bf Dependencies} \\ 
+\hline
+$s_1$ & 5 & $s_4, s_{10}$ \\ 
+ \hline 
+$s_2$ & 20 & None \\
+ \hline
+$s_3$ & 5 & $s_6$\\ 
+ \hline  
+$s_4$ & 40 & None \\ 
+ \hline 
+$s_5$ & 15 & $s_9$ \\
+ \hline
+$s_6$ & 10 & $s_1, s_{10}$\\ 
+ \hline  
+$s_7$ & 15 & $s_2$ \\ 
+ \hline 
+$s_8$ & 35 & $s_2, s_4, s_7$ \\
+ \hline
+$s_9$ & 10 & None\\ 
+ \hline  
+$s_{10}$ & 30 & $s_2$ \\ 
+ \hline 
+\end{tabular}
+\quad
+\begin{tabular}{ |c |c |}
+\hline
+\multicolumn{2}{|c|}{\bf Schedule}\\
+\hline
+{\bf Subproject} & {\bf Start time}\\ 
+\hline
+$s_2$ & 0 \\ 
+ \hline 
+$s_4$ & 0  \\
+ \hline
+$s_9$ & 0 \\ 
+ \hline  
+$s_5$ & 10  \\ 
+ \hline 
+$s_7$ & 20  \\
+ \hline
+$s_{10}$ & 20 \\ 
+ \hline  
+$s_8$ & 40  \\ 
+ \hline 
+$s_1$ & 50  \\
+ \hline
+$s_6$ & 55 \\ 
+ \hline  
+$s_3$ & 65  \\ 
+ \hline 
+ \multicolumn{2}{|c|}{\bf Total time: 75}\\
+ \hline
+\end{tabular}
+\end{center}
+
+
+\emph{(Hint: How can you turn this problem into a graph so that you may use an algorithm you already know as part of the solution?)}
+
+\newpage
+\begin{itemize}
+
+    \color{teal}
+    \item \textbf{A precise description of the algorithm in English and, if helpful, pseudocode.}
+
+        First, the provided node, dependency and weight values must be
+        converted into a graph format. We will use an adjacency list. The 
+        pseudocode to do so is provided below.
+
+        \begin{algorithm}[H]
+            \color{teal}
+            \caption{Schedule(G)} 
+            \KwIn{$JobTime$ array with time for each job $i$ }
+            \KwIn{$Dependencies$ array of arrays containing the dependencies for each subproject $i$}
+            $AdjList$ Initialize empty adjacency list \;
+            \For{$i = 0$ to $len(JobTime)$}{
+                \For{$j = 0$ to $len(Dependencies[i]$ }{
+                    $AdjList[Dependencies[i][j]].append(\left( i, JobTime[i] \right) )$
+                }
+            }
+            \KwOut{$AdjList$}
+        \end{algorithm}
+
+        The following algorithm takes an adjacency list representing the
+        sub projects and their dependencies. The edges coming out of subproject
+        $i$ will have weight $t_i$. To start, we must do a topological sort of
+        the jobs. Then, we create an reverse adjacency list so we can look up 
+        a nodes parents (dependencies) instead of it's children. 
+
+        Finally, for each node in the order of the topological sort, we can 
+        calculate start time $s_i$ by taking the maximum end time of each of 
+        its parents. The end time $e_i$ of a node is $s_i + w_i$. The logic for 
+        this is shown below.
+
+        \begin{algorithm}[H]
+            \color{teal}
+            \caption{Schedule(G, t)} 
+            \KwIn{$G$ A graph in adjacency list form, with weights included}
+            \KwIn{$t$ array of subproject times for project $i$}
+            $sorted = TopologicalSort(G)$ \;
+            $G' = Reverse(G)$ \;
+            $start = $ empty list default zero \;
+            $end = $ empty list \;
+            \For{$i = 0$ to $len(sorted)$}{
+                $maxTime = 0$ \;
+                $startTime = start[i]$ \;
+                \For{$j = 0$ to $len(G'[i])$ }{
+                    $weight = G'[i][j][1]$ \;
+                    $newMax = weight + startTime$ \;
+                    \If{$newMax > maxTime$ }{
+                        $maxTime = newMax$
+                    }
+                }
+                $start[i] = maxTime$ \;
+                \For{$i = 0 $ to $len(t)$}{
+                    $end[i] = start[i] + t[i]$ \;
+                }
+            }
+            $totalTime = max(end)$\;
+            \KwOut{$start, end, totalTime$}
+        \end{algorithm}
+
+
+    \item \textbf{Proof of Correctness}
+
+        To prove correctness we need to prove the two following claims: The 
+        longest path to each node gives the earliest possible start time and 
+        iterating over the topological sort allows us to calculate these 
+        longest paths.
+
+        A job can only be run by definition if all of its prerequisites have 
+        been met. We argue that finding the longest path of each node gives
+        a time equivalent to the earliest time the job can be started.
+        \begin{itemize}
+            \item \textbf{Base Case}
+
+                For the base case, we take the nodes with no dependencies. The 
+                shortest path to node $v_i$ with no dependencies is obviously
+                zero. This value is the expected minimum start time.
+
+            \item \textbf{Induction Step}
+
+                We assume that the longest path for each node $n$ steps from
+                the root nodes represent the earliest time a job can be started.
+                For node $n+1$ we know the earliest start time for each of its 
+                parents.  The longest time from a parent node to this node is 
+                the soonest time the job can be started since all of its 
+                dependencies must be completed before start. The claim therefore
+                holds for all $n$.
+
+        \end{itemize}
+
+        Next we prove that we can find this longest path on a topologically 
+        sorted set. 
+         \begin{itemize}
+             \item \textbf{Base Case}
+
+                 The base case is the first node in the topologically sorted
+                 set. Since topological sort grantees there will be no 
+                 dependencies to the left of any node in the array, we know 
+                 the first node can take the default start time of zero. The 
+                 algorithm returns the correct value. 
+
+             \item \textbf{Induction Step}
+
+                 We assume the algorithm works for nodes $0\ldots, n$. For case
+                 $n + 1$ we must look at all dependencies earliest start time
+                 and add the respective edge weights to find the longest path
+                 to node $n + 1`$. This will only fail if we do not have a longest 
+                 path for a parent of $n + 1$. Since the nodes are topologically 
+                 sorted and being processed in that order, it is impossible that 
+                 the algorithm will not have earliest starts for parent nodes
+                 at level $n + 1$. Therefore the algorithm will give the desired
+                 result.
+         \end{itemize}
+
+         Once we know we can find the start times for each node, finding the 
+         end time is as simple as adding the provided job runtime. The total 
+         time to finish all the jobs is just the maximum end time of the set 
+         of jobs.
+
+     \item \textbf{Time and Space Complexity}
+         \begin{itemize}
+             \item Time
+
+                 The time complexity of this algorithm is $O\left( m + n \right) $.
+                 The two main portions of the algorithm that are time intensive 
+                 are the topological sort, the reverse of the graph, and the
+                 calculation of the earliest start time iterating over the 
+                 topologically sorted array. All three of these portions require
+                 iterating over all the nodes and edges of the graph giving 
+                 a time complexity of $O\left( m + n \right) $. The final step 
+                 of calculating the end time and total start time can be done
+                 in $O\left( n \right) $ time. All other sections of the algorithm
+                 are $O\left( 1 \right) $ time.
+             \item Space
+
+                 The space complexity of the algorithm is $O\left( m + n  \right) $ 
+                 as this is the space required to keep an adjacency list of 
+                 the graph.
+         \end{itemize}
+
+
+\end{itemize}
+
+
+\end{document}

@@ -1,0 +1,304 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{fullpage}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+
+\pdfpagewidth 8.5in
+\pdfpageheight 11in 
+
+
+
+\oddsidemargin 0in
+\evensidemargin 0in
+
+
+\newtheorem{claim}{Claim}
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{observation}{Observation}
+\newtheorem{question}{Question}
+\newtheorem{problem}{Problem}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+
+
+\begin{document}
+	
+\begin{center}
+\Large{\textbf{CS 330, Fall 2020, Homework 2 \\
+Due Wednesday, September
+  16, 2020, 11:59 pm Eastern Time}}
+\end{center}
+
+\begin{center}
+   Student: Justin DiEmmanuele \\
+    Collaborators: Shilpen Patel, George Padavick, Matthew Gilgo
+\end{center}
+
+
+
+\section*{Homework Guidelines}
+
+\paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
+programming assignments and reading quizzes, is permitted, but not encouraged.
+If you
+choose to collaborate on some problems, you are allowed to discuss
+each problem with at most 5 other students currently enrolled in the
+class.
+Before working with others on a problem, you should think about it
+yourself for at least 45 minutes. Finding answers to problems on the
+Web or from other outside sources (these include anyone not enrolled
+in the class) is strictly forbidden.
+
+{\em You must write up each problem solution by yourself without
+assistance, even if you collaborate with others to solve the
+problem.} You must also identify your collaborators. If you did not
+work with anyone, you should write "Collaborators: none." It is a
+violation of this policy to submit a problem solution that you
+cannot orally explain to an instructor or TA.
+
+\paragraph{Solution guidelines} For problems that require you to provide an algorithm, you must give the following:
+    \begin{enumerate}
+\item  a precise description of the algorithm in English and, if helpful, pseudocode,
+\item a proof of correctness,
+\item an analysis of running time and space.
+\end{enumerate}
+You may use algorithms from class as subroutines. You may also use any facts that we proved in class.
+
+
+You should be as clear and concise as possible in your write-up of
+solutions. 
+
+A simple, direct analysis is worth more points than a
+convoluted one, both because it is simpler and less prone to error and
+because it is easier to read and understand. Points might be
+subtracted for illegible handwriting and for solutions that are too
+long. Incorrect solutions will get from 0 to 30\% of the grade,
+depending on how far they are from a working solution. Correct
+solutions with possibly minor flaws will get 70 to 100\%, depending on
+the flaws and clarity of the write up.
+
+\newpage
+\begin{enumerate}
+
+  \item {\bf Stable Matching} (2-page limit, 15 points) 
+\begin{enumerate}
+
+\item ({\bf Unique Matching}) Give an algorithm that takes an instance of the stable
+    matching problem as input and decides if there is {\em exactly
+      one} stable matching for this instance. That is, the algorithm takes as input the preference lists for two groups of the same size, $n$ (say, hospitals and residents), and
+    outputs either ``unique'', or ``more than one''. Your algorithm should run in polynomial time (for example, $O(n^2)$ or $O(n^{4.2})$; it shouldn't require exponential time).
+    
+    Notice that proving your algorithm correct requires proving three statements: 
+
+    \begin{enumerate}
+        \item The algorithm always terminates;
+        \item If there is a unique stable matching, then the algorithm will output ``Unique'';
+        \item If the algorithm outputs ``Unique'', then there really is only one stable matching. (This is the most challenging statement of the three)
+    \end{enumerate}
+
+    \emph{Hint}: It is helpful to read the section on ``Extensions'' at the
+    end of KT Section 1.1; specifically, read and understand Claims 1.7 and 1.8.
+
+    \color{teal}
+    \paragraph*{Solution} The solution below relies on the Gale-Shapley algorithm as described in Section 1.1 of KT.
+    
+    \begin{algorithm}[H]
+      \caption{UniqueMatching($male\_pref, female\_pref$)} 
+      \KwIn{$ male\_pref$ is an array of real numbers shaped $\left( n, m \right) $ where $male\_pref[n, m]$ is the $n$th male's $m$th preference.}
+      \KwIn{$female\_pref$ is the same as  $male\_pref$ but for the female participants.}
+
+      $male\_best\_match, female\_worst\_match = GaleShapley\left( male\_pref, female\_pref \right) $
+
+      $female\_best\_match, male\_worst\_match = GaleShapley\left(female\_pref , male\_pref \right) $
+
+      \For{$i = 1$ to $n$}{
+          \If{$male\_best\_match[i] \neq  male\_worst\_match[i]$}{
+              \KwOut{Not Unique}
+          }
+          \Else{
+              \# Do Nothing
+        }
+      }
+      \KwOut{Unique}
+
+    \end{algorithm}
+
+    The requirements that need to be satisfied for this problem are discussed below:
+
+    \begin{enumerate}
+        \color{black}
+        \item The algorithm always terminates;
+        \color{teal}
+            \begin{itemize}
+                \item Gale-Shapley Portion (lines 1-2)
+                    \begin{itemize}
+                        \item This algorithm is proved to terminate in claim 1.3 in Section 1 of KT
+                    \end{itemize}
+                \item Array comparison (starting line 3)
+                    \begin{itemize}
+                        \item This section simply is composed of a for loop iterating from 1 to $n$. This will execute at most $n$ times before terminating.
+                    \end{itemize}
+            \end{itemize}
+        \color{black}
+        \item If there is a unique stable matching, then the algorithm will output ``Unique'';
+        \color{teal}
+            \begin{itemize}
+                \item I assert that a unique solution exists if the most preferable G-S matching is the same as the worst matching.
+                \item If this is not true the algorithm automatically outputs "Not Unique". Otherwise, "Unique" is output. This can be seen by studying line 3 on in algorithm 1.
+                \item "Unique" can ONLY be output if the two compared arrays have every index matching.
+            \end{itemize}
+        \color{black}
+        \item If the algorithm outputs ``Unique'', then there really is only one stable matching. (This is the most challenging statement of the three)
+        \color{teal}
+            \begin{itemize}
+                \item We know from claim 1.6 in KT the G-S algorithm returns a set of matchings that are stable and from 1.8 this stable matching has the best possible matching for the proposing party. 
+                \item Claim 1.7 tells us that every execution of the G-S algorithm with the same input results in the same output. (the algorithm is deterministic)
+                \item Let $s$ represent the satisfaction level of the proposing side. This would be a measure of how high on the preference list each matching is for the proposing group as a whole.
+                \item By definition any matching $m$ must satisfy the following inequality: 
+                    \[
+                    min\left( s \right)  \le m \le  max\left( s \right)  
+                    .\] 
+                \item If we run G-S with the male group both proposing and being proposed to we can find both $m_{1} = max\left( s \right)$ and $m_{2} = min\left( s \right) $.
+                \item Then, all that is needed is to compare $m_{1}$ and $m_{2}$. If they are equal, the solution must be unique because there is no better and no worse solution from a satisfaction perspective from the inequality stated above.
+            \end{itemize}
+
+    \end{enumerate}
+
+    \color{black}
+
+
+
+    
+\newpage
+\item ({\bf Lower bounds}) Prove that it is possible for the Gale-Shapley algorithm to perform $\Omega(n^2)$
+offers before termination. [\textit{Hint:} One way to do this is to describe, for each $n$, both a suitable input and
+a sequence of  $\Omega(n^2)$ valid offers.]
+    \color{teal}
+\paragraph{Solution} 
+    \begin{itemize}
+        \item let $m$ and $s$ represent sets of men and women respectively. Both of length $n$.
+        \item The men all have the same preference list:
+            \[
+            w_{1}, w_{2}, w_{3}, \ldots, w_{n}
+            .\] 
+        \item The women all have the same preference list:
+            \[
+            m_{n}, m_{n-1}, m_{n-2}, \ldots, m_{1}
+            .\] 
+        \item We can walk through proposals for n=3 to understand how many iterations are needed.
+            \begin{itemize}
+                \item $m_{1}$ proposes to $w_{1}$, she accepts
+                \item $m_{2}$ proposes to $w_{1}$, she accepts. $m_{1}$ is free.
+                \item $m_{3}$ proposes to $w_{1}$, she accepts. $m_{2}$ is free.
+                \begin{itemize}
+                    \item \textbf{This is the first stable match as $m_{3}$ and $w_{1}$ are each others first preference}
+                \end{itemize}
+                \item $m_{1}$ proposes to $w_{2}$, she accepts.
+                \item $m_{2}$ proposes to $w_{2}$, she accepts. $m_{1}$ is free.
+                \begin{itemize}
+                    \item \textbf{This is the second stable match as $m_{2}$ only prefers $w_{1}$ to $w_{2}$ and $w_{2}$ only prefers $m_{3}$. $m_{3}$ and $w_{1}$ are currently in a stable matching.}
+                \end{itemize}
+                \item Finally, $m_{1}$ proposes to $w_{3}$, she accepts.
+                \begin{itemize}
+                    \item \textbf{This is the final match}
+                \end{itemize}
+            \end{itemize}
+        \item This shows the characteristics of this preference list case. The resulting number of iterations is: \[
+                n + (n-1) + (n-2) + \ldots + 2 + 1 = n\frac{n-1}{2}
+        .\] 
+        \begin{itemize}
+            \item Each stable matching must iterate through every available man because the last man is the one who will find a stable match. 
+            \item Each stable match takes 1 less iteration to find since the previous iteration results in a stable match.
+        \end{itemize}
+    \item In the expanded version of the equation representing the number of iterations it is clear G-S is $\Theta\left( n^2 \right) = \Omega\left( n^2 \right) $\[
+            n\frac{n-1}{2} = \frac{n^2}{2}-\frac{n}{2}-\frac{1}{2} = f\left( n \right) 
+    .\] \[
+            g\left( n \right) = n^2
+    .\] \[
+    \lim_{n \to \infty} \frac{f\left( n \right) }{g\left( n \right) }= \frac{1}{2}
+    .\]
+    \end{itemize}
+    \color{black}
+
+\end{enumerate}
+
+
+\newpage
+\item {\bf Asymptotics Review} (1-page limit, 10 points)
+
+Rank the following functions by their asymptotic growth rate (big-O relationships). 
+
+List functions on separate lines, where higher lines correspond to asymptotically larger functions (so $f(n)$ goes above $g(n)$ if $g(n)=O(f(n))$ and $f(n)\neq O(g(n))$). If two functions are asymptotically equivalent (that is, $f(n)=O(g(n))$ and $g(n)=O(f(n))$), then they should go on the same line.
+
+
+\[
+\renewcommand{\arraystretch}{2}
+\begin{array}{c|c|c|c|c}
+ \makebox[1in]{\ensuremath{n^{100}}}& 
+ n^3 - 5n^2 -10 n + 12 & 
+  \makebox[1in]{\ensuremath{n^{2} }}& 
+  \makebox[1in]{\ensuremath{\sqrt{n} }} & 
+  \makebox[1in]{\ensuremath{2^n }}
+\\ \hline 
+n^3 & \log_2 n & \log_3 n  & \sum_{i=1}^n i & 2.1^n\\ \hline 
+10 +\frac{1}{n} & n\log_2{n} & n\cdot 2^n & \binom{n}{2} - n + 2 &\log_2(n!)\\
+\end{array}
+\renewcommand{\arraystretch}{1}
+\]
+
+
+\emph{Hint}: You may want to review Big-Oh rules and logarithm properties.
+
+
+
+\[
+%\tiny
+%\renewcommand{\arraystretch}{2}
+%\begin{array}{c|c|c|c|c}
+    %\makebox[1in]{\ensuremath{n^{100} = O\left( n^{100} \right) }}& 
+    %n^3 - 5n^2 -10 n + 12 = O\left( n^{3} \right) & 
+    %\makebox[1in]{\ensuremath{n^{2} = O\left( n^{2} \right) }}& 
+    %\makebox[1in]{\ensuremath{\sqrt{n} = O\left( \sqrt{n}  \right) }} & 
+    %\makebox[1in]{\ensuremath{2^n = O\left( 2^n \right) }}
+%\\ \hline 
+    %n^3 = O\left( n^3 \right) & \log_2 n = O\left( \log{n} \right) & \log_3 n = O\left( \log{n} \right)   & \sum_{i=1}^n i = O\left( n^2 \right)  & 2.1^n = O\left( 2.1^n \right) \\ \hline 
+    %10 +\frac{1}{n} = O\left( n^{-1} \right) & n\log_2{n} = O\left( n\log{n} \right) & n\cdot 2^n = O\left( n \cdot 2^{n} \right) & \binom{n}{2} - n + 2 = O\left( n^2 \right)  &\log_2(n!) = O\left( n\log{n} \right) \\
+%\end{array}
+%\renewcommand{\arraystretch}{1}
+\]
+
+
+
+\color{teal}
+\paragraph{Solution} The functions are shown below sorted by asymptotic growth rate.
+
+\begin{table}[htpb]
+\color{teal}
+    \centering
+    \caption{Asymptotic Sorting}
+    \begin{tabular}{c|c|c}
+    $n\cdot2^{n}$ &  &  \\ \hline
+    $2.1^{n}$  &  &  \\ \hline
+    $2^{n}$ &  &  \\ \hline
+    $n^{100}$ &  &  \\ \hline
+    $n^3 - 5n^2 - 10n + 12$ & $n^3$ &  \\ \hline
+    $\sum_{n=i}^{n} i$ & $n^2$ & ${n \choose 2}-n +2$ \\ \hline
+    $n\log_2{n}$ & $\log_2{n!}$ &  \\ \hline
+     $\sqrt{n} $ &  &  \\ \hline
+     $\log_2{n}$ & $\log_3{n}$ &  \\ \hline
+    $10 + \frac{1}{n}$ &  &  \\ \hline
+    \end{tabular}
+\end{table}
+
+\end{enumerate}
+\end{document}

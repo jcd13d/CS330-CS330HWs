@@ -1,0 +1,337 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{fullpage,amsmath,amsfonts,latexsym,xcolor,clrscode3e}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+\newenvironment{solution}{\color{black} }{}
+
+\newcommand{\nats}{\mathbb{N}}
+
+\newcommand{\comment}[1]{$\rhd$\ {\small\sf #1}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{problem}{Problem}
+
+
+\begin{document}
+{\noindent\large
+{\em Introduction to Analysis of Algorithms} \hfill \today\\
+Boston University \hfill CS 330\\
+Professor  Adam Smith, Dora Erdos \hfill Fall 2020\\}
+\vspace{1pt}
+\hrulefill\vspace{3mm}
+\begin{center}
+{\LARGE\bf Homework 7}\\
+{\bf Early deadline: Wednesday, October 21 at 11:59 PM \\ No penalty later deadline: Saturday, October 24 at 11:59 PM}
+\end{center}
+
+\begin{center}
+    \color{teal}
+   Student: Justin DiEmmanuele \\
+    Collaborators: Shilpen Patel, George Padavick, Matthew Gilgo
+\end{center}
+
+\section*{Homework Guidelines}
+
+\paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
+programming assignments and reading quizzes, is permitted, but not encouraged.
+If you
+choose to collaborate on some problems, you are allowed to discuss
+each problem with at most 5 other students currently enrolled in the
+class.
+Before working with others on a problem, you should think about it
+yourself for at least 45 minutes. Finding answers to problems on the
+Web or from other outside sources (these include anyone not enrolled
+in the class) is strictly forbidden.
+
+{\em You must write up each problem solution by yourself without
+assistance, even if you collaborate with others to solve the
+problem.} You must also identify your collaborators. If you did not
+work with anyone, you should write "Collaborators: none." It is a
+violation of this policy to submit a problem solution that you
+cannot orally explain to an instructor or TA.
+
+\paragraph{Solution guidelines} For problems that require you to provide an algorithm, you must give the following:
+    \begin{enumerate}
+\item  a precise description of the algorithm in English and, if helpful, pseudocode,
+\item a proof of correctness,
+\item an analysis of running time and space.
+\end{enumerate}
+You may use algorithms from class as subroutines. You may also use any facts that we proved in class.
+
+
+You should be as clear and concise as possible in your write-up of
+solutions. 
+
+A simple, direct analysis is worth more points than a
+convoluted one, both because it is simpler and less prone to error and
+because it is easier to read and understand. Points might be
+subtracted for illegible handwriting and for solutions that are too
+long. Incorrect solutions will get from 0 to 30\% of the grade,
+depending on how far they are from a working solution. Correct
+solutions with possibly minor flaws will get 70 to 100\%, depending on
+the flaws and clarity of the write up.
+
+\paragraph{Exercises (do not hand in)}
+The following exercises are meant for practicing using the cut and cycle properties.
+
+\begin{itemize}
+    \item Given an edge $e$ in the MST of a graph $G$, find and output a cut $S$ for which it is the lightest edge in the cutset.
+    \item Given an edge $e$ not in the MST, find and output a cycle $C$ on which it is the heaviest edge.
+\end{itemize}
+
+\section*{Homework problems to hand in}
+\newpage
+\begin{enumerate}
+    \item (\textbf{MST Updates}) Suppose you are given a graph $G$ (with unique edge weights) and its associated minimum spanning tree $M$, along with an edge $(u,v)\in G$ that we want to remove. Call the resulting graph with the edge removed $G'$. Assume that $G'$ is still connected. 
+
+    \begin{enumerate}
+        \item Argue that it's sufficient to change at most one edge in the MST for $G$ so that it's the MST for $G'$. How do the cycle and cut properties help you find the edge to change? \textit{Hint:} Think about two cases separately: $(u,v) \in M$ and $(u,v) \notin M$.
+
+        \item Write an algorithm that takes $G$, the MST of $G$, and an edge $e$ in $G$, and outputs the minimum spanning tree of $G'$ (again, assuming $G'$ is still connected). Your algorithm should run in $O(n+m)$ time (do not recompute the MST from scratch; instead modify the MST you are given).
+    \end{enumerate}
+    
+    Below are some examples of graphs with MST edges labeled, and the resulting $G'$ and MST of $G'$
+    
+    \begin{enumerate}
+        \color{teal}
+        \item \textbf{It is sufficient to change at most one edge in the MST}
+            \begin{itemize}
+                \item Case 1: $(u, v)\not\in M$
+
+                    We claim that if the deleted edge $(u, v)$ is not in the MST $M$
+                we do not need to change $M$. For any edge $e$ in $M$, we can 
+                remove $e$ to create two separate trees, neither of which are 
+                spanning any longer. Let us call the two sets of nodes created
+                $A$ and $B$. By removing any edge $e$ and taking the cut set 
+                $(A, B)$, we can use the cut property outlined in the textbook
+                to prove that the minimum weight edge in that set must be included
+                in the new MST $M^{\prime}$. Since the previous graph was an
+                MST and the only deleted edge is one that was not in $M$ 
+                $M^{\prime}$ must be equivalent to $M$ or else the incoming 
+                tree $M$ must not be an MST.
+
+            \item Case 2: $(u, v) \in M$
+
+                The argument from case 1 still applies and shows that any edge
+                in $M$ that has not been deleted should be kept in $M^{\prime}$.
+                Now, we must decide which edge should take the deleted edge's 
+                place. Since we are guaranteed in the problem statement that the
+                graph will still be connected after the edge is deleted we know 
+                there will be at least one candidate to connect the disconnected
+                trees $A$ and $B$ created by deleting $e \in M$. We can use the 
+                cut property on the cut set $(A, B)$ to add the lightest edge
+                that connects those two sub-graphs. By the cut property we know
+                that edge must be in $M^{\prime}$.
+
+            \end{itemize}
+
+        \item \textbf{Write an algorithm to find the new MST}
+            \begin{itemize}
+                \item \textbf{A precise description of the algorithm}
+
+                \begin{algorithm}[H]
+                    \color{teal}
+                    \caption{NewMST($G$, $M$, $(u, v)$, $W$)} 
+                    \KwIn{$G$ A graph in adjacency list form - tuples of (adj\_node, weight)}
+                    \KwIn{$M$ Minimum spanning tree of graph $G$ in adjacency list form}
+                    \KwIn{$(u, w)$ edge to be deleted in  $G$}
+                    \KwIn{$W$ Weight of edge $i$}
+                    $G^{\prime}$ = $G$ \;
+                    $G^{\prime}[u][v] = 0$\;
+                    $min\_weight =$ inf\;
+
+                    \If{$M[u][v] = 0$ }{
+                        \KwOut{$M$}
+                    }
+
+                    $group_1$ = BFS($G^{\prime}$, $u$ )\;
+                    $group_2$ = BFS($G^{\prime}$, $v$ )\;
+
+                    \For{$i=0$ to $len(G) - 1$}{
+                        \For{$j=0$ to $len(G[i]) - 1$ }{
+                            \If{($group_1[u]$  not null and $group_2[v]$ not null) 
+                                or ($group_1[v]$  not null and $group_2[u]$ not null)}{
+                                \If{$G^{\prime}[i][j][1] < min\_weight$}{
+                                    $min\_weight = G^{\prime}[i][j][1]$\;
+                                    $new\_edge = (i, j)$\;
+                                }
+                            }
+                        }
+                    }
+
+                    $M^{\prime} = M$ \;
+                    $M^{\prime}[u][v] = 0$ \;
+                    $M^{\prime}[new\_edge[0]][new\_edge[1] = 1$ \;
+
+                    \KwOut{$M^{\prime}$}
+                \end{algorithm}
+
+                The algorithm first checks in line 4 if the edge exists in the 
+                MST - if not it returns the old MST. It then creates a record
+                of the nodes in the two disconnected trees created if the 
+                deleted node is in $M$. For each edge we then check if one node
+                exists in group 1 while the other node exists in group 2. If this
+                is true, we check the edge weight and update our minimum weight
+                edge if this edge weight is lower than the known lowest edge weight.
+                Finally, we add the new lowest weight edge that connects groups 
+                1 and 2 to the new MST $M^{\prime}$ and return it.\\
+
+
+                \item \textbf{Proof of correctness}\\
+                     
+                    We have already proved that any edge in $M$ after deletion 
+                    will be in $M^{\prime}$ and that if the deleted edge is in
+                    $M$, we must simply take the lightest edge in the cut set 
+                    between the two remaining tees.\\
+
+                    This is exactly what the algorithm sets out to do, we must 
+                    only prove that it achieves that goal. First, we initialize 
+                    variables and set the new graph $G^{\prime}$ this is 
+                    straightforward. Next, we find the disconnected trees in 
+                    group 1 and 2. Since an MST is a tree, definitionally, 
+                    deleting an edge in it will create two disconnected trees. 
+                    We know that BFS will return the lengths to any node in a
+                    connected component so we use that to find which nodes exist
+                    in which sub tree of the original MST. \\
+
+                    We then iterate through all edges and only take a new lowest
+                    weight if the edge has one node in each of the disconnected 
+                    trees. Since this iterates through every edge we are guaranteed 
+                    to find the edge of lowest weight that connects the groups.\\
+
+                    Finally, we add that edge to $M ^{\prime}$ and return it to the 
+                    user. Each step of the algorithm does what is needed to reach
+                    the stated goal.\\
+
+                \item \textbf{Time and space complexity}
+                    
+                    \textbf{Time Complexity}: Up until line 5 we only call 
+                    operations that run in $O\left( 1 \right) $ time. We then 
+                    call BFS twice which we know runs in $O\left( m + n \right) $ 
+                    time. We then reach nested for loops that will only run
+                    $O\left( m \right) $ times. All the operations within
+                    the innermost for loop are $O\left( 1 \right) $, setting 
+                    variables and accessing arrays to make logical comparisons.
+                    Finally, the last few operations are all $O\left( 1 \right) $ 
+                    time. The algorithm therefore runs in $O\left( m + n \right) $ 
+                    time - limited by the BFS performed.
+
+                    \textbf{Space Complexity}: The Space complexity is the space
+                    it takes to store the graph or $O\left( m + n \right) $
+
+
+
+
+            \end{itemize}
+
+    \end{enumerate}
+
+
+
+    \newpage
+    \item(\textbf{Maximum clearance routes}) Every year, trucks get stuck on Storrow Drive because of the low bridges (sometimes called ``\href{https://duckduckgo.com/?q=storrowing&t=ffab&iar=images&iax=images&ia=images}{storrowing}''). Suppose you're running a trucking company in Boston with $n$ warehouses. Each section of road $e\in E$ will be annotated with the clearance of the lowest bridge on that portion of road $c_e$. Assume all of the roads are undirected, and that all of the clearances are unique.  We'll say that the \emph{clearance of a route} from $i$ to $j$ is the minimum clearance of all the road segments on the route (you can't drive a truck that's taller than the lowest bridge on the route). Next, we'll say that a route is a \emph{maximum-clearance route between $i$ and $j$} if it is the route between $i$ and $j$ with largest route clearance out of all possible routes from $i$ to $j$. Intuitively, the maximum-clearance route between two nodes tells you the tallest truck that you can drive between the two locations without getting stuck under a bridge, as well as which path to use.
+    
+    You want to find an algorithm that computes a tree for max-clearance routes from a given node $s$. After giving it some thought, you think it might be related to the idea of a maximum spanning tree with respect to the edge clearances.
+    
+    Note: the \textbf{maximum} spanning tree of a graph $G$ is just a tree that connects all vertices in $G$ (hence "spanning") while maximizing the sum of the edge weights in the tree. Cycles are not allowed, as we still want a \emph{tree}.
+   
+    
+    \begin{enumerate}
+        \item State the cut and  cycle property for \textit{maximum} spanning trees (MaxST). 
+    
+        \item Show that in any graph $G$ with unique edge clearances, the path given by using edges from the maximum spanning tree of G (with respect to the edge weights given by the clearances $c_e$) gives the maximum clearance route between any two warehouses. [\textit{Hint:} There are a couple of natural ways to do this. One way is to proceed by contradiction: suppose that the highest-clearance path is not part of the MaxST; show that together with edges in the MaxST it creates a cycle that contradicts the cycle property above.]
+        
+        \item Give a polynomial-time algorithm that takes a graph $G$ with distinct edge clearances and outputs the maximum spanning tree. \emph{Hint:} Modify any of the minimum-weight spanning tree algorithms from class.
+    \end{enumerate}
+
+    \begin{enumerate}
+        \color{teal}
+        \item \textbf{Cut and cycle property for maximum spanning trees}
+            \begin{itemize}
+                \item \textbf{Cut Property}
+
+                    \color{red} do i need to prove anywhere? \color{teal}
+                    The cut property for MaxSTs is the following: Assume that 
+                    all edge costs are distinct. Let $S$ be any subset of nodes
+                    that is neither empty nor equal to all of V, and let edge
+                    $e = (v, w)$ be the maximum cost edge with one end in $S$ 
+                    and the other in $V - S$. Then every maximum spanning tree 
+                    contains the edge $e$. (Based on the property as defined 
+                    in the textbook)
+
+                \item \textbf{Cycle Property}
+
+                    Assume that all edge costs are distinct. Let $C$ be any 
+                    cycle in $G$, and let edge $e = (v, w)$ be the least 
+                    expensive edge belonging to $C$. Then $e$ does not belong 
+                    to any minimum spanning tree of $G$. (Based on the 
+                    property as defined in the textbook)
+
+
+            \end{itemize}
+        \item \textbf{Show MaxST contains minimum clearance path between any two 
+            nodes}
+            
+            Assume $M$ is the MaxST of graph $G(E, V)$ and there is an edge $e$ 
+            that over which we can find  higher clearance path from $u \in V$ 
+            to $v \in V$. If we add $e$ to $M$ we must create a cycle since 
+            $M$ is a spanning tree and $e$ is an edge between two nodes in 
+            $V$. To keep the highest clearance path in the cycle we must remove 
+            the lowest weight edge in the newly created cycle per the cycle 
+            property stated in part a. If $M$ was a MaxST before this, $e$ 
+            would not have been added because it is a smaller weight path. 
+            Therefore, by contradiction, the MaxST must comprise of the highest 
+            clearance paths between all nodes. 
+
+        \item \textbf{Polynomial-time algorithm that outputs the MaxST}
+
+            \begin{itemize}
+                \item \textbf{A precise description of the algorithm}
+                    To write an algorithm that finds the maximum spanning tree
+                    all we need to do is modify Kruskal's algorithm to 
+                    initially sort the edges in descending order instead of the 
+                    ascending order used for minimum spanning trees.
+
+                \item \textbf{Proof of correctness}
+
+                    Kruskal's relies on the cut property for adding each node. 
+                    When sorting by descending edge weight instead of 
+                    ascending, we add the greatest edge spanning two sets that
+                    are disconnected. We know they are disconnected because we 
+                    check that adding the new edge does not create a cycle. This
+                    principle is consistent with the maximum spanning tree rule
+                    as described in part a. 
+                    \color{red} do i need to prove the part a? \color{teal}
+
+                \item \textbf{Time and Space Complexity}
+                    
+                    \textbf{Time Complexity}: Since the only change in Kruskal's algorithm is the 
+                    way in which the edges are sorted, which has the same time
+                    complexity either way, the time complexity for the algorithm
+                    stays at $m\log{n}$
+
+                    \textbf{Space Complexity}: The Space complexity is the space
+                    it takes to store the graph or $O\left( m + n \right) $
+
+
+            \end{itemize}
+            
+
+
+    \end{enumerate}
+
+
+\end{enumerate}
+\end{document}
