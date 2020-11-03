@@ -1,0 +1,191 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{fullpage,amsmath,amsfonts,latexsym,xcolor,clrscode3e}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage{fullpage}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\usepackage{amsmath}
+
+\newcommand{\re}{{\mathbb{R}}}
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+\newcommand{\floor}[1]{\lfloor {#1} \rfloor}
+\newcommand{\ceil}[1]{\lceil {#1} \rceil}
+\newcommand{\paren}[1]{\left( {#1} \right)}
+\newenvironment{solution}{\color{black} }{}
+
+\newcommand{\nats}{\mathbb{N}}
+
+\newcommand{\comment}[1]{$\rhd$\ {\small\sf #1}}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{problem}{Problem}
+
+
+\begin{document}
+{\noindent\large
+{\em Introduction to Analysis of Algorithms} \hfill \today\\
+Boston University \hfill CS 330\\
+Professor  Adam Smith, Dora Erdos \hfill Fall 2020\\}
+\vspace{1pt}
+\hrulefill\vspace{3mm}
+\begin{center}
+{\LARGE\bf Homework 8}\\
+{\bf Due Wednesday, November 4 at 11:59 PM}
+\end{center}
+\section*{Homework Guidelines}
+
+\paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
+programming assignments and reading quizzes, is permitted, but not encouraged.
+If you
+choose to collaborate on some problems, you are allowed to discuss
+each problem with at most 5 other students currently enrolled in the
+class.
+Before working with others on a problem, you should think about it
+yourself for at least 45 minutes. Finding answers to problems on the
+Web or from other outside sources (these include anyone not enrolled
+in the class) is strictly forbidden.
+
+{\em You must write up each problem solution by yourself without
+assistance, even if you collaborate with others to solve the
+problem.} You must also identify your collaborators. If you did not
+work with anyone, you should write "Collaborators: none." It is a
+violation of this policy to submit a problem solution that you
+cannot orally explain to an instructor or TA.
+
+\paragraph{Solution guidelines} For problems that require you to provide an algorithm, you must give the following:
+    \begin{enumerate}
+\item  a precise description of the algorithm in English and, if helpful, pseudocode,
+\item a proof of correctness,
+\item an analysis of running time and space.
+\end{enumerate}
+You may use algorithms from class as subroutines. You may also use any facts that we proved in class.
+
+
+You should be as clear and concise as possible in your write-up of
+solutions. 
+
+A simple, direct analysis is worth more points than a
+convoluted one, both because it is simpler and less prone to error and
+because it is easier to read and understand. Points might be
+subtracted for illegible handwriting and for solutions that are too
+long. Incorrect solutions will get from 0 to 30\% of the grade,
+depending on how far they are from a working solution. Correct
+solutions with possibly minor flaws will get 70 to 100\%, depending on
+the flaws and clarity of the write up.
+
+\newpage 
+\begin{enumerate}
+    \item \textbf{(Recurrences)}
+    
+    Consider the following algorithm $A$:
+\begin{verbatim}
+def A(n):
+    if n == 0:
+        return 0
+    if n is even:
+        return A(n/2)
+    else:
+        return A(2(n-1)) + 1
+\end{verbatim}
+
+\begin{enumerate}
+    \item Prove that the $A$ terminates when its input $n$ is a nonnegative integer.
+    \item Write a recurrence for the running time (in terms of $n$) of $A$.
+    \item Give a closed form for its asymptotic running time (using whichever method you like)
+    \item If we look at the tree of recursive calls to $A$ made by this algorithm, what is its depth (asymptotically, in terms of $n$)? How many leaves does it have (asymptotically, in terms of $n$)?
+     \item What function of $n$ does $A$ compute? It's easy to express it in terms of the binary expansion of $n$ (i.e. the bits you get when you write $n$ in base 2).
+    \end{enumerate}
+
+    
+    \begin{enumerate}
+        \color{teal}
+        \item To prove that $A$ terminates when its input of $n$ is a 
+            non-negative integer, we will examine the three cases individually. 
+            We hope to show that in each case the input $n$ can only decrease
+            in size and eventually will hit the base case.
+            \begin{itemize}
+                \item Case 1: $n == 0$
+
+                    If $n == 0$, the algorithm simply returns zero and will 
+                    terminate. 
+
+                \item Case 2: The input $n$ is even
+
+                    If the input is even, the algorithm $A$ is called recursively
+                    on $\frac{n}{2}$ so the input is cut in half.  
+
+                \item Case 3: The input $n$ is odd
+
+                    If the input is odd we see that $A$ returns 
+                    $A(2\left( n - 1 \right)) + 1$. Here it is less clear
+                    that $n$ should always decrease in a series of calls. 
+                    However, we can continue from this case to see if we can 
+                    discover anything about the subsequent calls.
+                    
+                    \begin{itemize}
+                        \item First we recognize that for any odd number $n$, 
+                            $n - 1$ is even. 
+                        \item Since the next call will be on an even number,
+                            we know that case 2 will be true. We can then 
+                            substitute the original $2\left( n - 1 \right) $ 
+                            into case 2.
+                            \[
+                                A(\frac{2\left( n - 1 \right)}{2}) = A(n-1)
+                            .\] 
+                        \item From the call above, we see that the passed value
+                            resolves to $n-1$. Since we know $n-1$ is even,
+                            the next call must be:
+                             \[
+                                 A\left( \frac{n-1}{2} \right) 
+                            .\] 
+                    \end{itemize}
+
+                From these points we see that after 3 calls to $A$ consisting
+                of constant-time operations we arrive at a point where the 
+                input is once again halved. We finally must recognize that if 
+                any even number is halved and any odd number is decremented by
+                one and then halved we must eventually arrive at $n = 1$. This
+                input would call case 3: 
+                $A\left( 2\left( 1-1 \right)  \right) + 1$ in which the 
+                recursive call reaches the base case of $n=0$.\\
+
+                If $A$ is always taking constant time steps to half the input
+                and it will eventually reach the base case, the algorithm must 
+                terminate. 
+            \end{itemize}
+        \item Written recurrence:
+            \[ 
+                \begin{cases}
+                    0 & x\leq 0 \\
+                    \frac{100-x}{100} & 0\leq x\leq 100 \\
+                    0 & 100\leq x
+                \end{cases}
+            \]
+    \end{enumerate}
+
+
+    \newpage
+    \item \textbf{(More recurrences)}
+    
+    Suppose you are choosing between the following three algorithms, all of which have O(1) base cases for size 1:
+\begin{enumerate}
+        \item Algorithm A solves problems of size $n$ by dividing them into five subproblems of size $n/2$, recursively solving each subproblem, and then combining the solutions in linear time.
+        \item Algorithm B solves problems of size $n$ by recursively solving one subproblem of size $n/2$, one subproblem of size $2n/3$, and one subproblem of size $3n/4$ and then combining the solutions in linear time. 
+        
+        \emph{Hint:}  Approach this algorithm via the substitution method (pp. 211-217) to avoid tough summations.  
+        Also, solving that one as O($n^d$) for the smallest valid integer $d$ is all we're looking for.
+        \item Algorithm C solves problems of size $n$ by dividing them into nine subproblems of size $n/3$, recursively solving each subproblem, and then combining the solutions in $O(n^{2})$ time.
+\end{enumerate}
+What are the running times of each of these algorithms (in asymptotic notation) and which would you choose?  You may use the
+Master Method.
+
+\end{enumerate}
+
+
+
+\end{document}

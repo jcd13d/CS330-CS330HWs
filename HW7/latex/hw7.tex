@@ -262,7 +262,6 @@ The following exercises are meant for practicing using the cut and cycle propert
             \begin{itemize}
                 \item \textbf{Cut Property}
 
-                    \color{red} do i need to prove anywhere? \color{teal}
                     The cut property for MaxSTs is the following: Assume that 
                     all edge costs are distinct. Let $S$ be any subset of nodes
                     that is neither empty nor equal to all of V, and let edge
@@ -306,14 +305,48 @@ The following exercises are meant for practicing using the cut and cycle propert
 
                 \item \textbf{Proof of correctness}
 
+                    To prove this algorithm: first we must prove the cut 
+                    property in which Kruskal's algorithm relies on. For our
+                    MaxST version of the algorithm we are using the property as 
+                    described in part a.
+                    \begin{itemize}
+                        \item Let $T$ be a spanning tree that does not contain
+                            an edge $e$ but contains an edge $e^{\prime}$ which 
+                            has a lower cost than $e$. We must show that we can
+                            exchange $e^{\prime}$ for $e$ to create a new 
+                            spanning tree with a higher cost. Let edge
+                            $e = (u, v)$ and  $e^{\prime} = (u^{\prime}, v^{\prime})$.
+
+                        \item Since $T$ is a spanning tree, we know removing 
+                            edge $e^{\prime}$ would create a gap between two 
+                            connected trees that are no longer spanning. One
+                            tree must have $u$ in it and the other must have $v$.
+                            We will call the set containing $u$ $S$ and the set
+                            containing $v$ is therefore $V - S$ where $V$ is
+                            the set of all the vertices in $T$.
+
+                        \item Since removing $e^{\prime}$ creates a gap between
+                            $S$ and $V-S$ the edge we chose must be from the 
+                            set $S$ to the set $V - S$ in order for the resulting
+                            graph to not have any cycles and be spanning. 
+
+                        \item Since  $e$ has one node $u \in S$ and the other 
+                            $v \in V-S$ we can add $e$ to create a spanning
+                            tree. Since $e$ weighs more than $e^{\prime}$ the 
+                            tree is a heavier spanning tree. If $e$ is the heaviest
+                            edge bridging these sets it must me in the MaxST 
+                            since this argument can be made against any other 
+                            node.
+
+                    \end{itemize}
+
                     Kruskal's relies on the cut property for adding each node. 
                     When sorting by descending edge weight instead of 
                     ascending, we add the greatest edge spanning two sets that
                     are disconnected. We know they are disconnected because we 
                     check that adding the new edge does not create a cycle. This
                     principle is consistent with the maximum spanning tree rule
-                    as described in part a. 
-                    \color{red} do i need to prove the part a? \color{teal}
+                    as described in part a and proved above. 
 
                 \item \textbf{Time and Space Complexity}
                     
