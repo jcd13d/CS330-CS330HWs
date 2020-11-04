@@ -158,15 +158,44 @@ def A(n):
                 and it will eventually reach the base case, the algorithm must 
                 terminate. 
             \end{itemize}
-        \item Written recurrence:
+        \item Since we know constant time is used to get to another halving of 
+            the input from the substitution performed in part a, the recurrence
+            can be written as follows:
             \[ 
+                T\left( n \right) \le 
                 \begin{cases}
-                    0 & x\leq 0 \\
-                    \frac{100-x}{100} & 0\leq x\leq 100 \\
-                    0 & 100\leq x
+                    T\left( \frac{n}{2} \right) + O\left( 1 \right)  & \text{if $n$ is odd} \\
+                    T\left( \frac{n-1}{2} \right) + O\left( 1 \right)  & \text{if $n$ is even} \\
                 \end{cases}
             \]
+            To make the analysis easier, we can use just the even case since
+            the even case will always leave a larger input than the odd case. 
+            The result of any bounding derived from the even case will therefore
+            contain the odd case. 
+            \[
+                T\left( n \right) \le  T\left( \frac{n}{2} \right) + O\left( 1 \right)
+            .\] 
+
+        \item Using the master's method, we will give the asymptotic running 
+            time. $f(n) = O\left( 1 \right) $ so $c = 0 = \log_{2}{1}$ giving
+            case 2 as the correct master's formula. Simply, the running time 
+            is then $O\left( \log{n} \right) $.
+
+        \item The depth of the tree made by this algorithm asymptotically is 
+            $\log{n}$. At each step, $O\left( 1 \right) $ calculations are 
+            performed to reduce the size of the input by a factor of 2. To reach
+            the base-case of zero, the input must be reduced by the factor of
+            two $\log{n}$ times. This algorithm only produces one leaf for each 
+            recursive call - we can see this because only one call to $A$ exists
+            in each conditional statement. Because of this characteristic, the 
+            number of leaves should be asymptotically equivalent to the depth 
+            of the tree, $\log{n}$.
+
+        \item The algorithm returns the number of "on" bits that are needed to 
+            record $n$ in memory.
+
     \end{enumerate}
+
 
 
     \newpage
@@ -183,6 +212,71 @@ def A(n):
 \end{enumerate}
 What are the running times of each of these algorithms (in asymptotic notation) and which would you choose?  You may use the
 Master Method.
+
+\begin{enumerate}
+    \color{teal}
+    \item Algorithm A using the Master Method:
+
+        The recurrence for algorithm $A$ is as follows:
+        \[
+            T(n) \le 5T\left( \frac{n}{2} \right) + cn
+        .\] 
+        This gives $f\left( n \right) = O\left( n \right)  \Rightarrow c = 1$ 
+        which is less than $\log_{2}{5} = 2.323$. Using the corresponding 
+        formula we get $n^{\log_{2}{5}}$ which can be expressed with big-O
+        and big-omega notation as follows: 
+        \[
+            O\left( n^{2.323} \right) \text{ and } \Omega \left( n^{2.322} \right) 
+        .\] 
+
+    \item Algorithm B using substitution:
+
+        First we write the recurrence: 
+        \[
+            T\left( n \right) \le  T\left( \frac{n}{2} \right) + T\left( \frac{2n}{3} \right) + T\left( \frac{3n}{4} \right) + cn
+        .\] 
+
+        We assume the solution takes the form $an^{d}$ and plug this into the
+        recurrence.
+        \[
+            T\left( n \right) \le a\left( \frac{1}{2} \right) ^{d} n^{d}
+            + a\left( \frac{2}{3} \right) ^{d}n^{d} 
+            + a\left( \frac{3}{4} \right) ^{d}n^{d} + cn
+        .\] 
+        \[
+            T\left( n \right) \le  an^{d}\left( \left( \frac{1}{2} \right) ^{d}
+            + \left( \frac{2}{3} \right) ^{d} 
+            + \left( \frac{3}{4} \right)^{d} \right) + cn
+        .\] 
+
+        To solve the recurrence, we must find where the term attached to $an^{d}$
+        is less than 1. Using mathematical software, we receive the roots of
+        that equation. We can then state the boundaries of the asymptotic 
+        running time - the $n^{d}$ term will dominate. 
+        \[
+            O\left( n^{2.57} \right) \text{ and } \Omega \left( n^{2.56} \right) 
+        .\] 
+
+    \item Algorithm C using the Master Method:
+
+        The recurrence for algorithm C is as follows:
+        \[
+            T\left( n \right) \le  9T\left( \frac{n}{3} \right) + cn
+        .\] 
+        This gives $f\left( n \right) = cn^{2} \Rightarrow c = 2$ which is 
+        equal to $\log_{3}{9} = 2$. This leads us to use the second case of 
+        the Masters Method:
+        \[
+            \Theta\left( n^{\log_{3}{9}} \log{n} \right) = \Theta \left( n^{2}\log{n} \right) 
+        .\] 
+
+\end{enumerate}
+
+\color{teal}
+This tells us the proffered algorithm is algorithm C since:
+ \[
+     \Theta_{c}\left( n^{2}\log{n} \right) < O_{b}\left( 2.57 \right) < O_{a}\left( 2.323 \right) 
+.\] 
 
 \end{enumerate}
 
