@@ -37,6 +37,13 @@ Professor  Adam Smith, Dora Erdos \hfill Fall 2020\\}
 {\LARGE\bf Homework 8}\\
 {\bf Due Wednesday, November 4 at 11:59 PM}
 \end{center}
+
+\begin{center}
+    \color{teal}
+   Student: Justin DiEmmanuele \\
+    Collaborators: Shilpen Patel, George Padavick, Matthew Gilgo
+\end{center}
+
 \section*{Homework Guidelines}
 
 \paragraph{Collaboration policy} Collaboration on homework problems, with the exception of
@@ -188,8 +195,7 @@ def A(n):
             two $\log{n}$ times. This algorithm only produces one leaf for each 
             recursive call - we can see this because only one call to $A$ exists
             in each conditional statement. Because of this characteristic, the 
-            number of leaves should be asymptotically equivalent to the depth 
-            of the tree, $\log{n}$.
+            number of leaves at the end should therefore be just 1 leaf. 
 
         \item The algorithm returns the number of "on" bits that are needed to 
             record $n$ in memory.
@@ -248,9 +254,15 @@ Master Method.
             + \left( \frac{2}{3} \right) ^{d} 
             + \left( \frac{3}{4} \right)^{d} \right) + cn
         .\] 
+        \[
+            an^{d} \le  an^{d}\left( \left( \frac{1}{2} \right) ^{d}
+            + \left( \frac{2}{3} \right) ^{d} 
+            + \left( \frac{3}{4} \right)^{d} \right) + cn
+        .\] 
 
         To solve the recurrence, we must find where the term attached to $an^{d}$
-        is less than 1. Using mathematical software, we receive the roots of
+        is less than 1 on the right side of the equation. 
+        Using mathematical software, we receive the roots of
         that equation. We can then state the boundaries of the asymptotic 
         running time - the $n^{d}$ term will dominate. 
         \[
