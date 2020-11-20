@@ -100,6 +100,9 @@ def decrease_key(heap, kv_tuple):
 
     Is there are way to do better?
 
+    https://piazza.com/class/ke4guf9b9727kw?cid=749
+    basically dont delete from queue just check if popped item has been explored already
+
     """
     key, value = kv_tuple
     index = None
@@ -160,6 +163,28 @@ def dijkstra(N, m, s, adj_list):
     return distances, parents
 
 
+class UnionFind:
+    def __init__(self, N):
+        self.sizes = [1]*N
+        self.set_names = [i for i in range(N)]
+
+    def name(self, node):
+        if self.set_names[node] == node:
+            return node
+        else:
+            return self.name(self.set_names[node])
+
+    def _union_sets_helper(self, n1, n2):
+        self.sizes[self.name(n1)] += self.sizes[self.name(n2)]
+        self.set_names[self.name(n2)] = self.name(n1)
+
+    def union_sets(self, node1, node2):
+        if self.sizes[self.name(node1)] >= self.sizes[self.name(node2)]:
+            self._union_sets_helper(node1, node2)
+        else:
+            self._union_sets_helper(node2, node1)
+
+
 def kruskal(N, m, undirected_adj_list):
     # You are given the following variables:
     # N = number of nodes in the graph
@@ -171,10 +196,25 @@ def kruskal(N, m, undirected_adj_list):
     #
     # WRITE YOUR CODE HERE:
 
+    edge_list = []
+    mst_adj_list = [[] for i in range(N)]
+
+    # TODO limit to putting edges in edge list once
+    for node, adj_nodes in enumerate(undirected_adj_list):
+        for adj_node, adj_weight in adj_nodes:
+            edge_list.append((node, adj_node, adj_weight))
+
+    edge_list = sorted(edge_list, key=lambda x: x[2])
+    uf = UnionFind(N)
+
+    # print(edge_list)
+    for lnode, rnode, weight in edge_list:
+        if uf.name(lnode) != uf.name(rnode):
+            mst_adj_list[lnode].append((rnode, weight))
+            mst_adj_list[rnode].append((lnode, weight))
+            uf.union_sets(lnode, rnode)
 
     # Return the adjacency list for the MST, formatted as a list-of-lists in exactly the same way as undirected_adj_list
-
-    mst_adj_list = [[(1, 1, 0), (2, 2, 0)] for i in range(N)]
     return mst_adj_list
 
 
