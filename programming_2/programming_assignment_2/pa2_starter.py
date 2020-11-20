@@ -1,4 +1,5 @@
 
+import numpy as np
 import sys
 import heapq
 
@@ -91,6 +92,29 @@ def Run(input_file, output_file):
 ############################
 
 
+def decrease_key(heap, kv_tuple):
+    """
+    TODO: this dec key operation runs in O(n) time
+        - O(n) search for value
+        - O(logn) sift heapify operations
+
+    Is there are way to do better?
+
+    """
+    key, value = kv_tuple
+    index = None
+    for i, (k, v) in enumerate(heap):
+        if v == value:
+            index = i
+            break
+
+    if index is not None:
+        heap[index] = kv_tuple
+        heapq._siftup(heap, index)
+        heapq._siftdown(heap, 0, index)
+
+    return heap
+
 
 def dijkstra(N, m, s, adj_list):
     # You are given the following variables:
@@ -108,7 +132,52 @@ def dijkstra(N, m, s, adj_list):
     # Return two lists of size N, in which each index represents a node n:
     # distances: the shortest distance from s to n
     # parents: the last (previous) node before n on the shortest path
+
+    # def binary_search(list, val):
+    #
+    #     def binary_search_inner(list, left, right, val):
+    #         if left > right:
+    #             return None
+    #
+    #         mid = (left + right)//2
+    #
+    #         if list[mid][1] == val:
+    #             return mid
+    #         if list[mid][1] > val:
+    #             return binary_search_inner(list, left, mid - 1, val)
+    #         elif list[mid][1] <= val:
+    #             return binary_search_inner(list, mid + 1, right, val)
+    #
+    #     return binary_search_inner(list, 0, len(list), val)
+    #
+    # print(binary_search([(1, 5), (2, 10), (3, 2), (4, 20), (5, 22)], val=10))
+
+    distances = {}
+    parents = {}
+    pq = []
+    visited = [False]*N
+
+    for i in range(N):
+        if i == s:
+            distances[i] = 0
+            heapq.heappush(pq, (distances[s], 0))
+        else:
+            distances[i] = np.inf
+            heapq.heappush(pq, (distances[i], i))
+        parents[i] = None
+
+    while len(pq) > 0:
+        dist, node = heapq.heappop(pq)
+        for adj_node, adj_weight in adj_list[node]:
+            if not visited[adj_node]:
+                d_prime = distances[node] + adj_weight
+                if d_prime < distances[adj_node]:
+                    distances[adj_node] = d_prime
+                    decrease_key(pq, (d_prime, adj_node))
+                    parents[adj_node] = node
+
     return distances, parents
+
 
 def kruskal(N, m, undirected_adj_list):
     # You are given the following variables:
@@ -123,7 +192,8 @@ def kruskal(N, m, undirected_adj_list):
 
 
     # Return the adjacency list for the MST, formatted as a list-of-lists in exactly the same way as undirected_adj_list
-    
+
+    mst_adj_list = [[(1, 1, 0), (2, 2, 0)] for i in range(N)]
     return mst_adj_list
 
 
