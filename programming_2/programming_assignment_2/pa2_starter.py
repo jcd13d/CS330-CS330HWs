@@ -133,25 +133,6 @@ def dijkstra(N, m, s, adj_list):
     # distances: the shortest distance from s to n
     # parents: the last (previous) node before n on the shortest path
 
-    # def binary_search(list, val):
-    #
-    #     def binary_search_inner(list, left, right, val):
-    #         if left > right:
-    #             return None
-    #
-    #         mid = (left + right)//2
-    #
-    #         if list[mid][1] == val:
-    #             return mid
-    #         if list[mid][1] > val:
-    #             return binary_search_inner(list, left, mid - 1, val)
-    #         elif list[mid][1] <= val:
-    #             return binary_search_inner(list, mid + 1, right, val)
-    #
-    #     return binary_search_inner(list, 0, len(list), val)
-    #
-    # print(binary_search([(1, 5), (2, 10), (3, 2), (4, 20), (5, 22)], val=10))
-
     distances = {}
     parents = {}
     pq = []
