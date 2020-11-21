@@ -161,12 +161,8 @@ def dijkstra(N, m, s, adj_list):
             heapq.heappush(pq, (distances[i], i))
         parents[i] = None
 
-    # TODO getting error on pop unvisited out of range
-    # unsure why, there should always be an unvisited node in heap if every node is reachable?
     while visited_count < N:
-    # while len(pq) > 0:
         dist, node = pop_unvisited(pq, visited)
-        # dist, node = heapq.heappop(pq)
         visited_count += 1
         visited[node] = True
         for adj_node, adj_weight in adj_list[node]:
@@ -175,7 +171,6 @@ def dijkstra(N, m, s, adj_list):
                 if d_prime < distances[adj_node]:
                     distances[adj_node] = d_prime
                     heapq.heappush(pq, (d_prime, adj_node))     # dec key
-                    # decrease_key(pq, (d_prime, adj_node))
                     parents[adj_node] = node
 
     return distances, parents
