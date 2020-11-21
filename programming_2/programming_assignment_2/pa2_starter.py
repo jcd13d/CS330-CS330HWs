@@ -93,17 +93,6 @@ def Run(input_file, output_file):
 
 
 def decrease_key(heap, kv_tuple):
-    """
-    TODO: this dec key operation runs in O(n) time
-        - O(n) search for value
-        - O(logn) sift heapify operations
-
-    Is there are way to do better?
-
-    https://piazza.com/class/ke4guf9b9727kw?cid=749
-    basically dont delete from queue just check if popped item has been explored already
-
-    """
     key, value = kv_tuple
     index = None
     for i, (k, v) in enumerate(heap):
@@ -117,6 +106,27 @@ def decrease_key(heap, kv_tuple):
         heapq._siftdown(heap, 0, index)
 
     return heap
+
+
+def pop_unvisited(heap, visit_list):
+    pop_dist, pop_node = heapq.heappop(heap)
+    if visit_list[pop_node]:
+        return pop_unvisited(heap, visit_list)
+    else:
+        return pop_dist, pop_node
+
+h = []
+visited = [False]*4
+visited[2] = True
+visited[1] = True
+visited[3] = True
+heapq.heappush(h, (1, 3))
+heapq.heappush(h, (0, 2))
+heapq.heappush(h, (8, 0))
+heapq.heappush(h, (-5, 1))
+# print(h)
+# print(visited)
+# print(pop_unvisited(h, visited))
 
 
 def dijkstra(N, m, s, adj_list):
@@ -140,23 +150,34 @@ def dijkstra(N, m, s, adj_list):
     parents = {}
     pq = []
     visited = [False]*N
+    visited_count = 0
 
     for i in range(N):
         if i == s:
             distances[i] = 0
-            heapq.heappush(pq, (distances[s], 0))
+            heapq.heappush(pq, (distances[s], s))
         else:
             distances[i] = np.inf
             heapq.heappush(pq, (distances[i], i))
         parents[i] = None
 
+    # TODO getting error on pop unvisited out of range
+    # unsure why, there should always be an unvisited node in heap if every node is reachable?
+    # while visited_count < N:
     while len(pq) > 0:
-        dist, node = heapq.heappop(pq)
+        try:
+            # dist, node = pop_unvisited(pq, visited)
+            dist, node = heapq.heappop(pq)
+        except:
+            raise ValueError("raised at count {0}", format(visited_count))
+        visited_count += 1
+        visited[node] = True
         for adj_node, adj_weight in adj_list[node]:
             if not visited[adj_node]:
                 d_prime = distances[node] + adj_weight
                 if d_prime < distances[adj_node]:
                     distances[adj_node] = d_prime
+                    # heapq.heappush(pq, (d_prime, adj_node))     # dec key
                     decrease_key(pq, (d_prime, adj_node))
                     parents[adj_node] = node
 
