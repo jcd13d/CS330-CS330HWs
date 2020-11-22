@@ -92,22 +92,6 @@ def Run(input_file, output_file):
 ############################
 
 
-def decrease_key(heap, kv_tuple):
-    key, value = kv_tuple
-    index = None
-    for i, (k, v) in enumerate(heap):
-        if v == value:
-            index = i
-            break
-
-    if index is not None:
-        heap[index] = kv_tuple
-        heapq._siftup(heap, index)
-        heapq._siftdown(heap, 0, index)
-
-    return heap
-
-
 def pop_unvisited(heap, visit_list):
     pop_dist, pop_node = heapq.heappop(heap)
     if visit_list[pop_node]:
@@ -115,21 +99,8 @@ def pop_unvisited(heap, visit_list):
     else:
         return pop_dist, pop_node
 
-h = []
-visited = [False]*4
-visited[2] = True
-visited[1] = True
-visited[3] = True
-heapq.heappush(h, (1, 3))
-heapq.heappush(h, (0, 2))
-heapq.heappush(h, (8, 0))
-heapq.heappush(h, (-5, 1))
-# print(h)
-# print(visited)
-# print(pop_unvisited(h, visited))
 
-
-def dijkstra(N, m, s, adj_list):
+def dijkstra(N, m, s, adj_list, return_adj_list=False):
     # You are given the following variables:
     # N = number of nodes in the graph
     # m = number of edges in the graph
@@ -151,6 +122,7 @@ def dijkstra(N, m, s, adj_list):
     pq = []
     visited = [False]*N
     visited_count = 0
+    new_adj_list = [[] for i in range(N)]
 
     for i in range(N):
         if i == s:
@@ -163,6 +135,10 @@ def dijkstra(N, m, s, adj_list):
 
     while visited_count < N:
         dist, node = pop_unvisited(pq, visited)
+
+        # Building adjacency list for spanning tree for part 2
+        None if parents[node] is None else new_adj_list[parents[node]].append((node, distances[node] - distances[parents[node]]))
+
         visited_count += 1
         visited[node] = True
         for adj_node, adj_weight in adj_list[node]:
@@ -173,7 +149,10 @@ def dijkstra(N, m, s, adj_list):
                     heapq.heappush(pq, (d_prime, adj_node))     # dec key
                     parents[adj_node] = node
 
-    return distances, parents
+    if return_adj_list:
+        return distances, parents, new_adj_list
+    else:
+        return distances, parents
 
 
 class UnionFind:
@@ -212,7 +191,7 @@ def kruskal(N, m, undirected_adj_list):
     edge_list = []
     mst_adj_list = [[] for i in range(N)]
 
-    # TODO limit to putting edges in edge list once
+    # TODO limit to putting edges in edge list once - gives slightly better runtime
     for node, adj_nodes in enumerate(undirected_adj_list):
         for adj_node, adj_weight in adj_nodes:
             edge_list.append((node, adj_node, adj_weight))
@@ -241,7 +220,7 @@ def kruskal(N, m, undirected_adj_list):
 def main(args=[]):
     # WHEN YOU SUBMIT TO THE AUTOGRADER, 
     # PLEASE MAKE SURE THE FOLLOWING FUNCTION LOOKS LIKE:
-    # Run('input', 'output')
+    # Run('input.txt', 'output')
     Run('input', 'output')
 
     # AFTER YOUR RUN THE AUTOGRADER,

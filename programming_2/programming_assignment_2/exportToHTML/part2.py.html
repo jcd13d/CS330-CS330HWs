@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>part2.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+part2.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">sys</span>
+<span class="s0">import </span><span class="s1">os</span>
+<span class="s0">import </span><span class="s1">glob</span>
+<span class="s0">import </span><span class="s1">matplotlib.pyplot </span><span class="s0">as </span><span class="s1">plt</span>
+<span class="s0">import </span><span class="s1">numpy </span><span class="s0">as </span><span class="s1">np</span>
+<span class="s0">from </span><span class="s1">pa2_starter </span><span class="s0">import </span><span class="s1">readGraph</span><span class="s0">, </span><span class="s1">dijkstra</span><span class="s0">, </span><span class="s1">make_undirected_graph</span><span class="s0">, </span><span class="s1">kruskal</span>
+
+<span class="s2">&quot;&quot;&quot; 
+What we want: 
+    * TWR and MDF for each input.txt graph 
+        * TWR = cost(T_sp)/cost(T_mst) 
+        * MDR = max(d_tmst(s, u)/d_tsp(s, u)) 
+    * output 
+        * table of these values 
+        * scatter plots  
+&quot;&quot;&quot;</span>
+
+
+<span class="s0">def </span><span class="s1">graph_total_weight(adj_list):</span>
+    <span class="s3"># iterate through all edges and add up weights</span>
+    # have to be careful not to count both of the same edge twice? two directional edges
+    <span class="s1">weight_counted = [[</span><span class="s0">False</span><span class="s1">]*len(adj_list) </span><span class="s0">for </span><span class="s1">i </span><span class="s0">in </span><span class="s1">range(len(adj_list))]</span>
+    total_weight = <span class="s4">0</span>
+
+    <span class="s0">for </span><span class="s1">node</span><span class="s0">, </span><span class="s1">adj_nodes </span><span class="s0">in </span><span class="s1">enumerate(adj_list):</span>
+        <span class="s0">for </span><span class="s1">adj_node</span><span class="s0">, </span><span class="s1">weight </span><span class="s0">in </span><span class="s1">adj_nodes:</span>
+            <span class="s0">if not </span><span class="s1">weight_counted[node][adj_node]:</span>
+                total_weight += weight
+                weight_counted[node][adj_node] = <span class="s0">True</span>
+                <span class="s1">weight_counted[adj_node][node] = </span><span class="s0">True</span>
+
+    return <span class="s1">total_weight</span>
+
+
+<span class="s0">def </span><span class="s1">get_twr(tsp</span><span class="s0">, </span><span class="s1">tmst):</span>
+    <span class="s0">return </span><span class="s1">graph_total_weight(tsp) / graph_total_weight(tmst)</span>
+
+
+<span class="s0">def </span><span class="s1">get_mdr(tsp_distances</span><span class="s0">, </span><span class="s1">tmst_distances):</span>
+    <span class="s3"># calc d_tmst(s, u)/d_tsp(s, u) for each u != s (ignore distance zero)</span>
+    # can run dijkstra on mst to get distances dict
+    <span class="s0">assert </span><span class="s1">len(tsp_distances) == len(tmst_distances)</span>
+    dist_ratios = [<span class="s4">0</span><span class="s1">]*len(tsp_distances)</span>
+
+    <span class="s0">for </span><span class="s1">node_sp</span><span class="s0">, </span><span class="s1">distance_sp </span><span class="s0">in </span><span class="s1">tsp_distances.items():</span>
+        <span class="s0">if </span><span class="s1">distance_sp != </span><span class="s4">0</span><span class="s1">:</span>
+            dist_ratios[node_sp] = tmst_distances[node_sp] / distance_sp
+
+    <span class="s0">return </span><span class="s1">max(dist_ratios)</span>
+
+
+<span class="s0">def </span><span class="s1">run_part_2(input_file):</span>
+
+    N<span class="s0">, </span><span class="s1">m</span><span class="s0">, </span><span class="s1">s</span><span class="s0">, </span><span class="s1">adj_list = readGraph(input_file)</span>
+    distances_sp<span class="s0">, </span><span class="s1">parents_sp</span><span class="s0">, </span><span class="s1">sp = dijkstra(N</span><span class="s0">, </span><span class="s1">m</span><span class="s0">, </span><span class="s1">s</span><span class="s0">, </span><span class="s1">adj_list</span><span class="s0">, </span><span class="s1">return_adj_list=</span><span class="s0">True</span><span class="s1">)</span>
+    undirected_adj_list = make_undirected_graph(N<span class="s0">, </span><span class="s1">adj_list)</span>
+    mst = kruskal(N<span class="s0">, </span><span class="s1">m</span><span class="s0">, </span><span class="s1">undirected_adj_list)</span>
+    distances_mst<span class="s0">, </span><span class="s1">_ = dijkstra(N=N</span><span class="s0">, </span><span class="s1">m=m</span><span class="s0">, </span><span class="s1">s=s</span><span class="s0">, </span><span class="s1">adj_list=mst)     </span><span class="s3"># source shoudlnt</span>
+
+    <span class="s1">twr = get_twr(sp</span><span class="s0">, </span><span class="s1">mst)</span>
+    mdr = get_mdr(distances_sp<span class="s0">, </span><span class="s1">distances_mst)</span>
+
+    <span class="s0">return </span><span class="s1">twr</span><span class="s0">, </span><span class="s1">mdr</span>
+
+
+<span class="s0">def </span><span class="s1">plots(data</span><span class="s0">, </span><span class="s1">output</span><span class="s0">, </span><span class="s1">show=</span><span class="s0">False</span><span class="s1">):</span>
+    <span class="s0">for </span><span class="s1">graph_name</span><span class="s0">, </span><span class="s1">(twr</span><span class="s0">, </span><span class="s1">mdr) </span><span class="s0">in </span><span class="s1">data.items():</span>
+        plt.scatter(twr<span class="s0">, </span><span class="s1">mdr</span><span class="s0">, </span><span class="s1">label=graph_name)</span>
+    plt.legend()
+    plt.title(<span class="s2">&quot;TWR vs MDR for Different Graphs&quot;</span><span class="s1">)</span>
+    plt.ylabel(<span class="s2">&quot;Maximum Distance Ratio&quot;</span><span class="s1">)</span>
+    plt.xlabel(<span class="s2">&quot;Total Weight Ratio&quot;</span><span class="s1">)</span>
+    plt.grid()
+    <span class="s0">if </span><span class="s1">show:</span>
+        plt.show()
+    plt.savefig(os.path.join(output<span class="s0">, </span><span class="s2">&quot;chart.jpg&quot;</span><span class="s1">))</span>
+
+
+
+<span class="s0">if </span><span class="s1">__name__ == </span><span class="s2">&quot;__main__&quot;</span><span class="s1">:</span>
+    directory = glob.glob(os.path.join(sys.argv[<span class="s4">1</span><span class="s1">]</span><span class="s0">, </span><span class="s2">'*.txt'</span><span class="s1">))</span>
+    output_dir = sys.argv[<span class="s4">2</span><span class="s1">]</span>
+    output_data = {}
+
+    <span class="s0">for </span><span class="s1">file_path </span><span class="s0">in </span><span class="s1">directory:</span>
+        file_name = os.path.basename(file_path).split(<span class="s2">&quot;.&quot;</span><span class="s1">)[</span><span class="s4">0</span><span class="s1">]</span>
+        output_data[file_name] = run_part_2(file_path)
+
+    <span class="s0">for </span><span class="s1">k</span><span class="s0">, </span><span class="s1">(twr</span><span class="s0">, </span><span class="s1">mdr) </span><span class="s0">in </span><span class="s1">output_data.items():</span>
+        print(<span class="s2">&quot;{0}: Total Weight Ratio: {1:.4f}, Max Distance Ratio: {2:.4f}&quot;</span><span class="s1">.format(k</span><span class="s0">, </span><span class="s1">twr</span><span class="s0">, </span><span class="s1">mdr))</span>
+
+    plots(output_data<span class="s0">, </span><span class="s1">output=output_dir)</span>
+
+
+
+
+
+
+
+
+</pre>
+</body>
+</html>
