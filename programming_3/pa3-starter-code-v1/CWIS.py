@@ -67,7 +67,7 @@ def get_p_table(intervals):
     for name, start, end, weight in reversed(intervals):
         for i, (name_2, start_2, end_2, weight_2) in enumerate(reversed(intervals)):        # TODO runtime of reversed?
             if end_2 <= start:
-                p[name] = len(intervals) - i - 1
+                p[name] = len(intervals) - i
                 break
     return p
 
@@ -127,8 +127,8 @@ def find_solution(N, k, intervals):
 
     p = get_p_table(intervals)
 
-    # for key, v in p.items():
-    #     print("name: {0}, index: {1}".format(key, v))
+    for key, v in p.items():
+        print("name: {0}, index: {1}".format(key, v))
 
 
     M = [[None]*(k + 1) for i in range(N + 1)]
@@ -159,7 +159,7 @@ def find_solution(N, k, intervals):
     """
 
     print_mat(M)
-    plt.show()
+    # plt.show()
 
     schedule =[]
     
