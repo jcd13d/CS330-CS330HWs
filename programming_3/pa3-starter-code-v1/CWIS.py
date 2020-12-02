@@ -61,13 +61,14 @@ def get_p_table(intervals):
     TODO this can be improved - dont need to go through whole list in inner loop
     """
 
-    p = [None]*len(intervals)
-    for name, start, end, weight in reversed(intervals):
-        for name_2, start_2, end_2, weight_2 in reversed(intervals):        # TODO runtime of reversed?
-            if end_2 < start:
-                p[name] = name_2
-                break
+    # p = [None]*(len(intervals) + 1)
+    p = {i: None for i in range(len(intervals))}
 
+    for name, start, end, weight in reversed(intervals):
+        for i, (name_2, start_2, end_2, weight_2) in enumerate(reversed(intervals)):        # TODO runtime of reversed?
+            if end_2 <= start:
+                p[name] = len(intervals) - i - 1
+                break
     return p
 
 
@@ -109,27 +110,56 @@ def find_solution(N, k, intervals):
         for i in m:
             print(i)
 
+    # Changing indexing to be from 1
+    for i, (name, start, end, weight) in enumerate(intervals):
+        intervals[i][0] = name + 1
+
     intervals = sorted(intervals, key=lambda x: x[2])
-    for name, start, end, weight in intervals:
-        print(name, start, end, weight)
+
+    import matplotlib.pyplot as plt
+    y = 0
+    for i, (name, start, end, weight) in enumerate(intervals):
+        # print(name, start, end, weight)
+        plt.hlines(y, xmin=start, xmax=end)
+        plt.text((start+end)/2, y + 0.3, weight)
+        y+=1
+    plt.grid()
 
     p = get_p_table(intervals)
-    M = [[None]*k for i in range(N)]
 
-    for i in range(k):
+    # for key, v in p.items():
+    #     print("name: {0}, index: {1}".format(key, v))
+
+
+    M = [[None]*(k + 1) for i in range(N + 1)]
+
+    for i in range(k + 1):
         M[0][i] = 0
-    for i in range(N):
+    for i in range(N + 1):
         M[i][0] = 0
 
-    for i in range(N):
-        for j in range(k):
-            this_p = p[i] if p[i] is not None else 0
-            not_selected = M[i][max(j-1, 0)]
-            selected = M[this_p][max(j-1, 0)]
+    # for i in range(1, N + 1):
+    for i, (name, start, end, weight) in enumerate(intervals):
+        # print(i, name, start, end, weight)
+        i = i + 1
+        for j in range(1, k + 1):
+            this_p = p[name] if p[name] is not None else 0
+            # print(this_p)
+            # print(p)
+            # print("i: {0}".format(i))
+            not_selected = M[max(i-1, 0)][j]
+            selected = M[this_p][max(j-1, 0)] + weight
+            print("i: {0}, j: {1}, select = {2}, nselect = {3}, this_p = {4}".format(i, j, selected, not_selected, this_p))
+            # print(p)
             M[i][j] = max(not_selected, selected)
 
+    """
+    currently trying to match up my new p to the function
+    but does my matrix zero correspond to what I want it to using that?
+    """
 
-
+    print_mat(M)
+    plt.show()
 
     schedule =[]
     
@@ -148,7 +178,7 @@ def main(args=[]):
     # WHEN YOU SUBMIT TO THE AUTOGRADER, 
     # PLEASE MAKE SURE THE FOLLOWING FUNCTION LOOKS LIKE:
     # Run('input', 'output')
-    Run('input', 'output')
+    Run('input_2', 'output')
 
 if __name__ == "__main__":
     main(sys.argv[1:])    
