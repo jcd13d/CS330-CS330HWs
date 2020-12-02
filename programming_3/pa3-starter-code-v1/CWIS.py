@@ -62,7 +62,7 @@ def get_p_table(intervals):
     """
 
     # p = [None]*(len(intervals) + 1)
-    p = {i: None for i in range(len(intervals))}
+    p = {i: None for i in range(len(intervals) + 1)}
 
     for name, start, end, weight in reversed(intervals):
         for i, (name_2, start_2, end_2, weight_2) in enumerate(reversed(intervals)):        # TODO runtime of reversed?
@@ -115,6 +115,8 @@ def find_solution(N, k, intervals):
         intervals[i][0] = name + 1
 
     intervals = sorted(intervals, key=lambda x: x[2])
+    jobs = [[0]*N for i in range(N + 1)]
+    # print(jobs)
 
     import matplotlib.pyplot as plt
     y = 0
@@ -127,8 +129,8 @@ def find_solution(N, k, intervals):
 
     p = get_p_table(intervals)
 
-    for key, v in p.items():
-        print("name: {0}, index: {1}".format(key, v))
+    # for key, v in p.items():
+    #     print("name: {0}, index: {1}".format(key, v))
 
 
     M = [[None]*(k + 1) for i in range(N + 1)]
@@ -149,9 +151,16 @@ def find_solution(N, k, intervals):
             # print("i: {0}".format(i))
             not_selected = M[max(i-1, 0)][j]
             selected = M[this_p][max(j-1, 0)] + weight
-            print("i: {0}, j: {1}, select = {2}, nselect = {3}, this_p = {4}".format(i, j, selected, not_selected, this_p))
+            # print("i: {0}, j: {1}, select = {2}, nselect = {3}, this_p = {4}".format(i, j, selected, not_selected, this_p))
             # print(p)
             M[i][j] = max(not_selected, selected)
+
+            # TODO this isnt working but idea is when we select it should be whatever p set is plus current selection
+            if selected > not_selected:
+                jobs[i] = jobs[this_p].copy()
+                jobs[i][i - 1] = 1
+            else:
+                jobs[i] = jobs[i-1].copy()
 
     """
     currently trying to match up my new p to the function
@@ -159,10 +168,12 @@ def find_solution(N, k, intervals):
     """
 
     print_mat(M)
-    # plt.show()
+    print_mat(jobs)
+    schedule = [i for i, e in enumerate(jobs[-1]) if e != 0]
+    print(schedule)
+    print(k)
+    plt.show()
 
-    schedule =[]
-    
     return schedule
 
 
@@ -178,7 +189,7 @@ def main(args=[]):
     # WHEN YOU SUBMIT TO THE AUTOGRADER, 
     # PLEASE MAKE SURE THE FOLLOWING FUNCTION LOOKS LIKE:
     # Run('input', 'output')
-    Run('input_2', 'output')
+    Run('input_3', 'output')
 
 if __name__ == "__main__":
     main(sys.argv[1:])    
