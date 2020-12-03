@@ -78,7 +78,7 @@ def get_p_table(intervals):
 
 ############################
 
-def find_solution(N, k, intervals):
+def find_solution(N, k, intervals, show_plot=False, return_weight=False):
     # You are given the following variables:
     # N - the total number of intervals
     # k - the max number of intervals you can put on your schedule
@@ -118,14 +118,15 @@ def find_solution(N, k, intervals):
     jobs = [[0]*N for i in range(N + 1)]
     # print(jobs)
 
-    import matplotlib.pyplot as plt
-    y = 0
-    for i, (name, start, end, weight) in enumerate(intervals):
-        # print(name, start, end, weight)
-        plt.hlines(y, xmin=start, xmax=end)
-        plt.text((start+end)/2, y + 0.3, weight)
-        y+=1
-    plt.grid()
+    # import matplotlib.pyplot as plt
+    # y = 0
+    # for i, (name, start, end, weight) in enumerate(intervals):
+    #     # print(name, start, end, weight)
+    #     plt.hlines(y, xmin=start, xmax=end)
+    #     plt.text((start+end)/2+5, y + 0.3, weight)
+    #     plt.text((start+end)/2, y + 0.3, str(name - 1) + ")")
+    #     y+=1
+    # plt.grid()
 
     p = get_p_table(intervals)
 
@@ -134,11 +135,13 @@ def find_solution(N, k, intervals):
 
 
     M = [[None]*(k + 1) for i in range(N + 1)]
+    taken = [[False]*(k + 1) for i in range(N + 1)]
 
     for i in range(k + 1):
         M[0][i] = 0
     for i in range(N + 1):
         M[i][0] = 0
+
 
     # for i in range(1, N + 1):
     for i, (name, start, end, weight) in enumerate(intervals):
@@ -157,24 +160,62 @@ def find_solution(N, k, intervals):
 
             # TODO this isnt working but idea is when we select it should be whatever p set is plus current selection
             if selected > not_selected:
+                taken[i][j] = True
                 jobs[i] = jobs[this_p].copy()
                 jobs[i][i - 1] = 1
             else:
                 jobs[i] = jobs[i-1].copy()
 
     """
-    currently trying to match up my new p to the function
-    but does my matrix zero correspond to what I want it to using that?
+    not working because i am only storing j=k solution at each step!!!
+    how do I backtrace?!
     """
 
-    print_mat(M)
-    print_mat(jobs)
-    schedule = [i for i, e in enumerate(jobs[-1]) if e != 0]
-    print(schedule)
-    print(k)
-    plt.show()
+    # print_mat(M)
+    # print_mat(jobs)
+    # print_mat(taken)
+    # print(p)
 
-    return schedule
+    # schedule = [i for i, e in enumerate(jobs[-1]) if e != 0][-k:]
+
+    # print(schedule)
+    no_jobs = k
+    schedule = []
+    current_interval = len(M) - 1
+    while no_jobs > 0:
+        if taken[current_interval][no_jobs]:
+            schedule.append(intervals[current_interval - 1][0] - 1)
+            # schedule.append(current_interval)
+            no_jobs -= 1
+            if p[intervals[current_interval - 1][0]] is None:
+                break
+            else:
+                current_interval = p[intervals[current_interval - 1][0]]
+        else:
+            current_interval -= 1
+
+    # print(schedule)
+
+
+    # real_schedule = []
+    # for index in schedule:
+    #     real_schedule.append(intervals[index][0] - 1)
+
+    # for i, v in enumerate(intervals):
+    #     print(i, v[0] - 1)
+    # print(p)
+
+    # print(real_schedule)
+    # schedule = real_schedule
+
+    # print(k)
+    if show_plot:
+        plt.show()
+
+    if not return_weight:
+        return schedule
+    else:
+        return schedule, M[-1][-1]
 
 
 
@@ -189,7 +230,7 @@ def main(args=[]):
     # WHEN YOU SUBMIT TO THE AUTOGRADER, 
     # PLEASE MAKE SURE THE FOLLOWING FUNCTION LOOKS LIKE:
     # Run('input', 'output')
-    Run('input_3', 'output')
+    Run('input', 'output')
 
 if __name__ == "__main__":
     main(sys.argv[1:])    
