@@ -35,10 +35,21 @@ def print_answer(input, calc_ans):
 
 def Run(input_file, output_file):
     N, k, intervals = readInput(input_file)
-    schedule, weight = find_solution(N, k, intervals, return_weight=True, show_plot=False)
+    schedule, weight = find_solution(N, k, intervals, return_weight=True)#, show_plot=False)
     assert all(isinstance(n, int) for n in schedule), "All items in schedule array should be type INT, otherwise the autograder will fail."
     writeOutput(schedule, output_file)
     return schedule, weight
+
+
+# import matplotlib.pyplot as plt
+# y = 0
+# for i, (name, start, end, weight) in enumerate(intervals):
+#     # print(name, start, end, weight)
+#     plt.hlines(y, xmin=start, xmax=end)
+#     plt.text((start+end)/2+5, y + 0.3, weight)
+#     plt.text((start+end)/2, y + 0.3, str(name - 1) + ")")
+#     y+=1
+# plt.grid()
 
 
 

@@ -72,13 +72,21 @@ def get_p_table(intervals):
     return p
 
 
+# def new_get_p(end, start):
+#     p = {}
+#     assert len(end) == len(start)
+#     for i, interval in enumerate(reversed(end)):
+#         print(i, interval)
+#     return p
+#
+#
 ############################
 
 # FINISH THESE METHODS
 
 ############################
 
-def find_solution(N, k, intervals, show_plot=False, return_weight=False):
+def find_solution(N, k, intervals, return_weight=False):
     # You are given the following variables:
     # N - the total number of intervals
     # k - the max number of intervals you can put on your schedule
@@ -102,37 +110,19 @@ def find_solution(N, k, intervals, show_plot=False, return_weight=False):
                                     -> not selected     |
                                                         -> selected
 
-    TODO: does matrix need to be N+1 by K+1? and then index intervals from 1?
-
     """
-
-    def print_mat(m):
-        for i in m:
-            print(i)
 
     # Changing indexing to be from 1
     for i, (name, start, end, weight) in enumerate(intervals):
         intervals[i][0] = name + 1
 
+    unsorted = intervals
     intervals = sorted(intervals, key=lambda x: x[2])
+    start_time_sort = sorted(intervals, key=lambda x: x[2])
     jobs = [[0]*N for i in range(N + 1)]
-    # print(jobs)
-
-    # import matplotlib.pyplot as plt
-    # y = 0
-    # for i, (name, start, end, weight) in enumerate(intervals):
-    #     # print(name, start, end, weight)
-    #     plt.hlines(y, xmin=start, xmax=end)
-    #     plt.text((start+end)/2+5, y + 0.3, weight)
-    #     plt.text((start+end)/2, y + 0.3, str(name - 1) + ")")
-    #     y+=1
-    # plt.grid()
 
     p = get_p_table(intervals)
-
-    # for key, v in p.items():
-    #     print("name: {0}, index: {1}".format(key, v))
-
+    # p = new_get_p(intervals, start_time_sort)
 
     M = [[None]*(k + 1) for i in range(N + 1)]
     taken = [[False]*(k + 1) for i in range(N + 1)]
@@ -142,23 +132,14 @@ def find_solution(N, k, intervals, show_plot=False, return_weight=False):
     for i in range(N + 1):
         M[i][0] = 0
 
-
-    # for i in range(1, N + 1):
     for i, (name, start, end, weight) in enumerate(intervals):
-        # print(i, name, start, end, weight)
         i = i + 1
         for j in range(1, k + 1):
             this_p = p[name] if p[name] is not None else 0
-            # print(this_p)
-            # print(p)
-            # print("i: {0}".format(i))
             not_selected = M[max(i-1, 0)][j]
             selected = M[this_p][max(j-1, 0)] + weight
-            # print("i: {0}, j: {1}, select = {2}, nselect = {3}, this_p = {4}".format(i, j, selected, not_selected, this_p))
-            # print(p)
             M[i][j] = max(not_selected, selected)
 
-            # TODO this isnt working but idea is when we select it should be whatever p set is plus current selection
             if selected > not_selected:
                 taken[i][j] = True
                 jobs[i] = jobs[this_p].copy()
@@ -166,19 +147,6 @@ def find_solution(N, k, intervals, show_plot=False, return_weight=False):
             else:
                 jobs[i] = jobs[i-1].copy()
 
-    """
-    not working because i am only storing j=k solution at each step!!!
-    how do I backtrace?!
-    """
-
-    # print_mat(M)
-    # print_mat(jobs)
-    # print_mat(taken)
-    # print(p)
-
-    # schedule = [i for i, e in enumerate(jobs[-1]) if e != 0][-k:]
-
-    # print(schedule)
     no_jobs = k
     schedule = []
     current_interval = len(M) - 1
@@ -193,24 +161,6 @@ def find_solution(N, k, intervals, show_plot=False, return_weight=False):
                 current_interval = p[intervals[current_interval - 1][0]]
         else:
             current_interval -= 1
-
-    # print(schedule)
-
-
-    # real_schedule = []
-    # for index in schedule:
-    #     real_schedule.append(intervals[index][0] - 1)
-
-    # for i, v in enumerate(intervals):
-    #     print(i, v[0] - 1)
-    # print(p)
-
-    # print(real_schedule)
-    # schedule = real_schedule
-
-    # print(k)
-    if show_plot:
-        plt.show()
 
     if not return_weight:
         return schedule
